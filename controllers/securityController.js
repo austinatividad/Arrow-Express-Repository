@@ -11,6 +11,7 @@ const securityController = {
 
     getSecurity: async function (req, res) {
 
+        // TODO: Refactor to use a repository design pattern
         const query = {idNumber: req.query.idNumber};
 
         const projection = 'idNumber';
@@ -43,6 +44,7 @@ const securityController = {
         const securityCode = req.body.user_securityCode;
       
         try {
+          // TODO: Refactor to use a repository design pattern
           const query = { idNumber: idNumber };
           const projection = { idNumber: 1, securityCode: 1};
           const result = await db.findOne(User, query, projection);

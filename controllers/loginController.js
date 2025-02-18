@@ -12,9 +12,11 @@ const loginController = {
 
         if ( req.session.idNumber ){
 
+          // TODO: Refactor to use a repository design pattern
           const query = { idNumber: req.session.idNumber };
           const projection = { idNumber: 1 };
           const result = await db.findOne(User, query, projection);
+          // TODO: Refactor to use a repository design pattern
           const result2 = await db.findOne(Admin, query, projection);
 
           if (result) {
@@ -37,9 +39,11 @@ const loginController = {
         const password = req.body.user_password;
 
         try {
+          // TODO: Refactor to use a repository design pattern
           const query = { idNumber: idNumber };
           const projection = { idNumber: 1, password: 1};
           const result = await db.findOne(User, query, projection);
+          // TODO: Refactor to use a repository design pattern
           const result2 = await db.findOne(Admin, query, projection);
           
           if (result && await bcrypt.compare(password, result.password)) {

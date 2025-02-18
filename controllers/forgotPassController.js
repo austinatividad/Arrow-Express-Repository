@@ -14,7 +14,9 @@ const forgotPassController = {
 
         var query = {email: req.body.user_email, securityCode: req.body.user_securityCode};
 
+        // TODO: Refactor to use a repository design pattern
         const resultUser = await db.findOne(User, query, 'idNumber email securityCode');
+        // TODO: Refactor to use a repository design pattern
         const resultAdmin = await db.findOne(Admin, query, 'idNumber email securityCode');
 
         var details = {};
@@ -56,15 +58,19 @@ const forgotPassController = {
             var query = {idNumber: req.body.idNumber};
             const projection = { idNumber: 1, password: 1};
 
+            // TODO: Refactor to use a repository design pattern
             const resultUser = await db.findOne(User, query, projection);
+            // TODO: Refactor to use a repository design pattern
             const resultAdmin = await db.findOne(Admin, query, projection);
 
             if ( resultUser != null ) {
+                // TODO: Refactor to use a repository design pattern
                 await User.updateOne(query, {password: req.body.user_newPassword1})
                 console.log("Change password successful");
                 res.render('Login', { codeChange: true } );
             }
             else if ( resultAdmin != null ) {
+                // TODO: Refactor to use a repository design pattern
                 await Admin.updateOne(query, {password: req.body.user_newPassword1})
                 console.log("Change password successful");
                 res.render('Login', { codeChange: true } );

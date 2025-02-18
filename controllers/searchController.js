@@ -12,6 +12,7 @@ const searchController = {
 
     postUserSearch : async function (req, res) {
         let payload = req.body.payload.trim();
+        // TODO: Refactor to use a repository design pattern
         let search = await User.find(
             {
               $or: [
@@ -35,6 +36,7 @@ const searchController = {
       
         const projection = 'idNumber firstName lastName designation passengerType profilePicture';
       
+        // TODO: Refactor to use a repository design pattern
         const result = await db.findOne(User, query, projection);
       
         if (result != null) {
@@ -69,7 +71,8 @@ const searchController = {
 
         var userID = req.query.idNumber;
 
-		    const result = await db.findMany(Reservation, {idNumber: userID}, {_id:0, __v:0});
+        // TODO: Refactor to use a repository design pattern
+        const result = await db.findMany(Reservation, {idNumber: userID}, {_id:0, __v:0});
 
         res.render('SearchReservation', {result: result, idNumber: userID});
 

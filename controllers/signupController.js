@@ -43,6 +43,7 @@ const signupController = {
                 profilePicture: "images/profilepictures/Default.png"
             }
     
+            // TODO: Refactor to use a repository design pattern
             var result = await db.insertOne(User, user);
     
             if( result ){
@@ -62,7 +63,9 @@ const signupController = {
 
         
         var idNumber = req.query.idNumber;
+        // TODO: Refactor to use a repository design pattern
         var result = await db.findOne(User, {idNumber: idNumber});
+        // TODO: Refactor to use a repository design pattern
         var result2 = await db.findOne(Admin, {idNumber: idNumber});
         if ( result ){
             res.send(result);
@@ -77,7 +80,9 @@ const signupController = {
     getCheckEmail: async function (req, res) {
 
         var email = req.query.email;
+        // TODO: Refactor to use a repository design pattern
         var result = await db.findOne(User, {email: email}, 'email');
+        // TODO: Refactor to use a repository design pattern
         var result2 = await db.findOne(Admin, {email: email}, 'email');
         if ( result ){
             res.send(result);

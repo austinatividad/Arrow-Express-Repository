@@ -7,6 +7,7 @@ const scheduleController = {
         const { buttonClicked } = req.query;
         if(buttonClicked=== 'entry') {
 
+            // TODO: Refactor to use a repository design pattern
             const reservations = await Reservation.find({
                 date,
                 entryLoc: location,
@@ -18,6 +19,7 @@ const scheduleController = {
         else if (buttonClicked=== 'exit') {
 
             const { date, location, time } = req.params;
+            // TODO: Refactor to use a repository design pattern
             const reservations = await Reservation.find ({
                 date, 
                 exitLoc: location,

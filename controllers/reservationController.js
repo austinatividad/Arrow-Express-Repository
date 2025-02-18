@@ -17,8 +17,10 @@ const reservationController = {
 			const query = { idNumber: userID };
 			const projection = { idNumber: 1 };
 			
+			// TODO: Refactor to use a repository design pattern
 			const isAdmin = await db.findOne(Admin, query, projection);
 	
+			// TODO: Refactor to use a repository design pattern
 			const result = await db.findMany(Reservation, {idNumber: userID}, {_id:0, __v:0});
 	
 			if ( isAdmin != null ) {
@@ -39,6 +41,7 @@ const reservationController = {
 			const query = { idNumber: userID };
 			const projection = { idNumber: 1 };
 
+			// TODO: Refactor to use a repository design pattern
 			const isAdmin = await db.findOne(Admin, query, projection);
 
 			if ( isAdmin != null ){
@@ -74,7 +77,9 @@ const reservationController = {
 
 			const query = { idNumber: idNumber};
 			const projection = { idNumber: 1 };
+			// TODO: Refactor to use a repository design pattern
 			const result = await db.findOne(User, query, projection);
+			// TODO: Refactor to use a repository design pattern
 			const result2 = await db.findOne(Admin, query, projection);
 			
 			if (result) {
@@ -109,6 +114,7 @@ const reservationController = {
 			var result;
 			if (idNum !== 0) {
 				rsv.idNumber = idNum;
+				// TODO: Refactor to use a repository design pattern
 				result = await db.insertOne(Reservation, rsv);
 			}
 			/*
@@ -161,8 +167,10 @@ const reservationController = {
 			console.log(upd.exitLoc);
 			console.log(upd.exitTime);
 
+			// TODO: Refactor to use a repository design pattern
 			var found = await db.findOne(Reservation, curr);
 			if(found){
+				// TODO: Refactor to use a repository design pattern
 				await Reservation.updateOne(curr, upd);
 				console.log('succesfully updated');
 				res.redirect('/Reservation?idNumber=' + req.body.ehiddenIdNumber + '&isUpdateSuccess=true');
@@ -189,6 +197,7 @@ const reservationController = {
 
 		console.log('to delete');
 		console.log(rsv);
+		// TODO: Refactor to use a repository design pattern
 		var deleted = await Reservation.deleteOne(rsv);
 		if(deleted){
 			console.log('succesfully deleted');
@@ -212,7 +221,9 @@ const reservationController = {
 		var idNumber = req.body.user_idNumber;
 		var adminId = req.body.adminId;
 
+		// TODO: Refactor to use a repository design pattern
 		const isFoundUser = await db.findOne(User, {idNumber: idNumber}, {idNumber: 1});
+		// TODO: Refactor to use a repository design pattern
 		const isFoundAdmin = await db.findOne(Admin, {idNumber: idNumber}, {idNumber: 1});
 
 		if ( isFoundUser == null && isFoundAdmin == null ){
@@ -222,6 +233,7 @@ const reservationController = {
 
 			console.log('test');
 
+			// TODO: Refactor to use a repository design pattern
 			const result = await db.findMany(Reservation, {idNumber: idNumber}, "");
 
 			if ( result.length !== 0 ){
@@ -270,6 +282,7 @@ const reservationController = {
 				console.log("OH NO THE CODE MONKEYS DID AN OOPSIE WOOPSIE");
 				adminId = 1111111;
 			}
+			// TODO: Refactor to use a repository design pattern
 			const result = await db.findMany(Reservation, {idNumber: upd.idNumber}, {_id:0, __v:0});
 
 			res.render('ReservationAdmin', {result, result, adminId: adminId, isUpdateSuccess: false});
@@ -278,8 +291,10 @@ const reservationController = {
 		}
 		else{
 			
+			// TODO: Refactor to use a repository design pattern
 			var found = await db.findOne(Reservation, curr);
 			if(found){
+				// TODO: Refactor to use a repository design pattern
 				await Reservation.updateOne(curr, upd);
 				console.log('Succesfully updated');
 				
@@ -288,6 +303,7 @@ const reservationController = {
 					console.log("OH NO THE CODE MONKEYS DID AN OOPSIE WOOPSIE");
 					adminId = 1111111;
 				}
+				// TODO: Refactor to use a repository design pattern
 				const result = await db.findMany(Reservation, {idNumber: upd.idNumber}, {_id:0, __v:0});
 				res.render('ReservationAdmin', {result: result, adminId: adminId, isUpdateSuccess: true});
 			}
@@ -313,6 +329,7 @@ const reservationController = {
 
 		console.log('to delete');
 		console.log(rsv);
+		// TODO: Refactor to use a repository design pattern
 		var deleted = await Reservation.deleteOne(rsv);
 		if(deleted){
 			console.log('succesfully deleted');
@@ -322,6 +339,7 @@ const reservationController = {
 				console.log("OH NO THE CODE MONKEYS DID AN OOPSIE WOOPSIE");
 				adminId = 1111111;
 			}
+			// TODO: Refactor to use a repository design pattern
 			const result = await db.findMany(Reservation, {idNumber: rsv.idNumber}, {_id:0, __v:0});
 			res.render('ReservationAdmin', {result: result, adminId: adminId, isDeleteSuccess: true});
 		}

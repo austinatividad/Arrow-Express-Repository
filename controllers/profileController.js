@@ -15,7 +15,9 @@ const profileController = {
       if ( req.session.idNumber != req.query.idNumber ) {
         const query = { idNumber: req.session.idNumber };
         const projection = { idNumber: 1 };
+        // TODO: Refactor to use a repository design pattern
         const result = await db.findOne(User, query, projection);
+        // TODO: Refactor to use a repository design pattern
         const result2 = await db.findOne(Admin, query, projection);
         if (result) {
           res.status(200).redirect('/Profile?idNumber=' + req.session.idNumber);     
@@ -26,6 +28,7 @@ const profileController = {
       else{
         const query = {idNumber: req.query.idNumber};
         const projection = 'idNumber firstName lastName designation passengerType profilePicture';
+        // TODO: Refactor to use a repository design pattern
         const result = await db.findOne(User, query, projection);
       
         if (result != null) {
@@ -61,7 +64,9 @@ const profileController = {
       if ( req.session.idNumber != req.query.idNumber ) {
         const query = { idNumber: req.session.idNumber };
         const projection = { idNumber: 1 };
+        // TODO: Refactor to use a repository design pattern
         const result = await db.findOne(User, query, projection);
+        // TODO: Refactor to use a repository design pattern
         const result2 = await db.findOne(Admin, query, projection);
         if (result) {
           res.status(200).redirect('/Profile?idNumber=' + req.session.idNumber);     
@@ -73,6 +78,7 @@ const profileController = {
         var query = {idNumber: req.query.idNumber};
         var projection = 'idNumber firstName lastName designation passengerType profilePicture';
 
+        // TODO: Refactor to use a repository design pattern
         const result = await db.findOne(Admin, query, projection);
         
         if (result != null) {
@@ -109,15 +115,19 @@ const profileController = {
       var query = {idNumber: req.body.idNumber };
       const projection = { idNumber: 1, firstName: 1, lastName: 1, designation: 1, passengerType: 1 };
 
+      // TODO: Refactor to use a repository design pattern
       const resultUser = await db.findOne(User, query, projection);
+      // TODO: Refactor to use a repository design pattern
       const resultAdmin = await db.findOne(Admin, query, projection);
 
       if (resultUser != null && (req.body.newFirstName != "" && req.body.newLastName != "") ) {
+        // TODO: Refactor to use a repository design pattern
         await User.updateOne(query, {firstName: req.body.newFirstName, lastName: req.body.newLastName})
         console.log("User public info change successful");
         res.redirect('/Profile?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
       }
       else if (resultAdmin != null && (req.body.newFirstName != "" && req.body.newLastName != "") ) {
+        // TODO: Refactor to use a repository design pattern
         await Admin.updateOne(query, {firstName: req.body.newFirstName, lastName: req.body.newLastName})
         console.log("Admin user public info change successful");
         res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
@@ -125,10 +135,12 @@ const profileController = {
       else if ( ( resultUser != null || resultAdmin != null ) && req.file.originalname != null ){
 
         if ( resultUser ){
+          // TODO: Refactor to use a repository design pattern
           await User.updateOne(query, {profilePicture: "images/profilepictures/" + req.body.idNumber + ".png"})
           res.redirect('/Profile?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
         }
         else if ( resultAdmin ){
+          // TODO: Refactor to use a repository design pattern
           await Admin.updateOne(query, {profilePicture: "images/profilepictures/" + req.body.idNumber + ".png"})
           res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
         }
@@ -146,15 +158,19 @@ const profileController = {
       var query = {idNumber: req.body.idNumber };
       const projection = { idNumber: 1, designation: 1};
 
+      // TODO: Refactor to use a repository design pattern
       const resultUser = await db.findOne(User, query, projection);
+      // TODO: Refactor to use a repository design pattern
       const resultAdmin = await db.findOne(Admin, query, projection);
      
       if (resultUser != null ) {
+        // TODO: Refactor to use a repository design pattern
         await User.updateOne(query, {designation: req.body.newDesignation})
         console.log("User private info change successful");
         res.redirect('/Profile?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
       }
       else if (resultAdmin != null ) {
+        // TODO: Refactor to use a repository design pattern
         await Admin.updateOne(query, {designation: req.body.newDesignation})
         console.log("Admin user private info change successful");
         res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
@@ -170,15 +186,19 @@ const profileController = {
       var query = {idNumber: req.body.idNumber};
       const projection = { idNumber: 1, password: 1 };
 
+      // TODO: Refactor to use a repository design pattern
       const resultUser = await db.findOne(User, query, projection);
+      // TODO: Refactor to use a repository design pattern
       const resultAdmin = await db.findOne(Admin, query, projection);
 
       if (resultUser != null && await bcrypt.compare(req.body.currentPassword, resultUser.password) ) {
+        // TODO: Refactor to use a repository design pattern
         await User.updateOne(query, {password: await bcrypt.hash(req.body.newPassword, saltRounds)})
         console.log("User password change successful");
         res.redirect('/Profile?idNumber=' + req.body.idNumber + '&pwChangeSuccess=true');
       }
       else if (resultAdmin != null && await bcrypt.compare(req.body.currentPassword, resultAdmin.password)) {
+        // TODO: Refactor to use a repository design pattern
         await Admin.updateOne(query, {password: await bcrypt.hash(req.body.newPassword, saltRounds)} )
         console.log("Admin user password change successful");
         res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&pwChangeSuccess=true');
@@ -195,15 +215,19 @@ const profileController = {
       var query = {idNumber: req.body.idNumber};
       const projection = { idNumber: 1, securityCode: 1 };
     
+      // TODO: Refactor to use a repository design pattern
       const resultUser = await db.findOne(User, query, projection);
+      // TODO: Refactor to use a repository design pattern
       const resultAdmin = await db.findOne(Admin, query, projection);
 
       if (resultUser != null && await bcrypt.compare(req.body.currentSecCode, resultUser.securityCode)) {
+        // TODO: Refactor to use a repository design pattern
         await User.updateOne(query, {securityCode: await bcrypt.hash(req.body.newSecCode, saltRounds)});
         console.log("User code change successful");
         res.redirect('/Profile?idNumber=' + req.body.idNumber + '&codeChangeSuccess=true');
       }
       else if (resultAdmin != null && await bcrypt.compare(req.body.currentSecCode, resultAdmin.securityCode)) {
+        // TODO: Refactor to use a repository design pattern
         await Admin.updateOne(query, {securityCode: await bcrypt.hash(req.body.newSecCode, saltRounds)});
         console.log("User code change successful");
         res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&codeChangeSuccess=true');
@@ -222,13 +246,17 @@ const profileController = {
       var query = {idNumber: req.body.idNumber};
       const projection = { idNumber: 1, password: 1 };
     
+      // TODO: Refactor to use a repository design pattern
       const resultUser = await db.findOne(User, query, projection);
+      // TODO: Refactor to use a repository design pattern
       const resultAdmin = await db.findOne(Admin, query, projection);
 
       var details = {};
   
       if (resultUser != null && await bcrypt.compare(req.body.Password, resultUser.password) ) {
+        // TODO: Refactor to use a repository design pattern
         await User.deleteOne(query);
+        // TODO: Refactor to use a repository design pattern
         await Reservation.deleteMany(query);
 
         details = {
@@ -242,7 +270,9 @@ const profileController = {
         
       }
       else if (resultAdmin != null && await bcrypt.compare(req.body.Password, resultAdmin.password) ) {
+        // TODO: Refactor to use a repository design pattern
         await Admin.deleteOne(query);
+        // TODO: Refactor to use a repository design pattern
         await Reservation.deleteMany(query);
         console.log("Admin user deleted");
 
