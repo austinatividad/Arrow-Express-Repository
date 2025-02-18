@@ -9,10 +9,11 @@ const securityController = {
             const user = await UserRepository.findById(idNumber);
             const admin = await AdminRepository.findById(idNumber);
 
-            if (user) {
-                return res.render('Security', { idNumber });
-            } else if (admin) {
-                return res.render('SecurityAdmin', { idNumber });
+            if (user || admin) {
+                return res.render('Security', { 
+                    idNumber,
+                    isAdmin: !!admin 
+                });
             }
 
             res.render('Error', { error: 'Account not found' });

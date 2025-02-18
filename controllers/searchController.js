@@ -3,7 +3,7 @@ const ReservationRepository = require('../repositories/ReservationRepository.js'
 
 const searchController = {
     getSearch: function (req, res) {
-        res.render('Search', res);
+        res.render('Search');
     },
 
     postUserSearch: async function (req, res) {

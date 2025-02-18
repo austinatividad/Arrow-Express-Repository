@@ -40,10 +40,6 @@ const controller = {
         res.render('SignUp',res);
     },
     
-    getSearch: function (req, res) {
-        res.render('Search', res);
-    },
-
     getProfile: function (req, res){
         res.render('Profile', res);
     },
