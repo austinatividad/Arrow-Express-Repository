@@ -1,12 +1,9 @@
-const db = require('../models/db.js');
-const User = require('../models/userdb.js');
-const Reservation = require('../models/reservationdb.js');
 const UserRepository = require('../repositories/UserRepository.js');
 const ReservationRepository = require('../repositories/ReservationRepository.js');
 
 const searchController = {
     getSearch: function (req, res) {
-        res.render('Search');
+        res.render('Search', res);
     },
 
     postUserSearch: async function (req, res) {

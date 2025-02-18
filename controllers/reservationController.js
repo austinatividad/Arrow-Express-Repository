@@ -1,355 +1,229 @@
-const db = require('../models/db.js');
-
-const User = require('../models/userdb.js');
-
-const Admin = require('../models/admindb.js');
-
-const Reservation = require('../models/reservationdb.js');
+const UserRepository = require('../repositories/UserRepository.js');
+const AdminRepository = require('../repositories/AdminRepository.js');
+const ReservationRepository = require('../repositories/ReservationRepository.js');
 
 const reservationController = {
-
     getReservations: async function (req, res) {
-		
-		if ( req.session.idNumber != req.query.idNumber ) {
-			res.redirect('/Reservation?idNumber=' + req.session.idNumber );
-		}else{
-			var userID = req.query.idNumber;
-			const query = { idNumber: userID };
-			const projection = { idNumber: 1 };
-			
-			// TODO: Refactor to use a repository design pattern
-			const isAdmin = await db.findOne(Admin, query, projection);
-	
-			// TODO: Refactor to use a repository design pattern
-			const result = await db.findMany(Reservation, {idNumber: userID}, {_id:0, __v:0});
-	
-			if ( isAdmin != null ) {
-				res.render('Reservation', {displayUI: 1, result: result, idNumber: userID, isAdmin: true});
-			} else {
-				res.render('Reservation', {displayUI: 0, result: result, idNumber: userID, isAdmin: false});
-			}
-		}
+        try {
+            const { idNumber } = req.query;
+            
+            if (req.session.idNumber !== idNumber) {
+                return res.redirect('/Reservation?idNumber=' + req.session.idNumber);
+            }
 
-		
+            const isAdmin = await AdminRepository.findById(idNumber);
+            const reservations = await ReservationRepository.findUserReservations(idNumber);
+
+            res.render('Reservation', {
+                displayUI: isAdmin ? 1 : 0,
+                result: reservations,
+                idNumber,
+                isAdmin: !!isAdmin
+            });
+        } catch (error) {
+            console.error('Error retrieving reservations:', error);
+            res.render('Error', { error: 'Failed to retrieve reservations' });
+        }
     },
 
     getReservationAdmin: async function (req, res) {
+        try {
+            const { idNumber } = req.query;
+            
+            if (req.session.idNumber !== idNumber) {
+                const isAdmin = await AdminRepository.findById(req.session.idNumber);
+                if (isAdmin) {
+                    return res.redirect('/ReservationAdmin?idNumber=' + req.session.idNumber);
+                }
+                return res.render('Error', { error: 'Unauthorized access' });
+            }
 
-		if ( req.session.idNumber != req.query.idNumber ){
-
-			var userID = req.session.idNumber;
-			const query = { idNumber: userID };
-			const projection = { idNumber: 1 };
-
-			// TODO: Refactor to use a repository design pattern
-			const isAdmin = await db.findOne(Admin, query, projection);
-
-			if ( isAdmin != null ){
-				res.redirect('/ReservationAdmin?idNumber=' + req.session.idNumber );
-			}else{
-				res.render('Error');
-			}
-			
-		}else{
-			var userID = req.query.idNumber;
-
-			const details = {
-				idNumber: userID,
-			}
-	
-			res.render('ReservationAdmin', details);
-		}
-
+            res.render('ReservationAdmin', { idNumber });
+        } catch (error) {
+            console.error('Error accessing admin reservations:', error);
+            res.render('Error', { error: 'Failed to access admin reservations' });
+        }
     },
 
-	//Add reservation
-	postReservations: async function (req, res) {
-        /*
-            when submitting forms using HTTP POST method
-            the values in the input fields are stored in `req.body` object
-            each <input> element is identified using its `name` attribute
-            Example: the value entered in <input type="text" name="fName">
-            can be retrieved using `req.body.fName`
-        */		
-		if (req.body.user_idNumber != ""){
+    postReservations: async function (req, res) {
+        try {
+            let idNumber;
+            if (req.body.user_idNumber) {
+                const user = await UserRepository.findById(req.body.user_idNumber);
+                const admin = await AdminRepository.findById(req.body.user_idNumber);
+                
+                if (!user && !admin) {
+                    return res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=false');
+                }
+                idNumber = req.body.user_idNumber;
+            } else {
+                idNumber = req.body.hiddenIdNumber;
+            }
 
-			const idNumber = req.body.user_idNumber;
+            const reservationData = {
+                idNumber,
+                startCampus: req.body.hiddenStartCampus,
+                date: req.body.user_date,
+                entryLoc: req.body.hiddenEntryLoc,
+                entryTime: req.body.hiddenEntryTime,
+                exitLoc: req.body.hiddenExitLoc,
+                exitTime: req.body.hiddenExitTime
+            };
 
-			const query = { idNumber: idNumber};
-			const projection = { idNumber: 1 };
-			// TODO: Refactor to use a repository design pattern
-			const result = await db.findOne(User, query, projection);
-			// TODO: Refactor to use a repository design pattern
-			const result2 = await db.findOne(Admin, query, projection);
-			
-			if (result) {
-				var idNum = req.body.user_idNumber;
-			} else if (result2) {
-				var idNum = req.body.user_idNumber;
-			} else {
-				var idNum = 0;
-				console.log('User does not exist');
-			}
+            if (reservationData.entryLoc === "Entry Location" || 
+                reservationData.entryTime === "Entry Time" || 
+                reservationData.exitLoc === "Exit Location" || 
+                reservationData.exitTime === "Exit Time") {
+                return res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=false');
+            }
 
-		}
-		else{
-			var idNum = req.body.hiddenIdNumber;
-		}
-			
-        var rsv = {
-			startCampus: req.body.hiddenStartCampus,
-			date: req.body.user_date,
-			entryLoc: req.body.hiddenEntryLoc,
-			entryTime: req.body.hiddenEntryTime,
-			exitLoc: req.body.hiddenExitLoc,
-			exitTime: req.body.hiddenExitTime,
-		  };
-
-		if ( rsv.entryLoc == "Entry Location" || rsv.entryTime == "Entry Time" || rsv.exitLoc == "Exit Location" || rsv.exitTime == "Exit Time" ){
-			res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=false');
-			console.log('Reservation failed to add');
-		}
-		else{
-
-			var result;
-			if (idNum !== 0) {
-				rsv.idNumber = idNum;
-				// TODO: Refactor to use a repository design pattern
-				result = await db.insertOne(Reservation, rsv);
-			}
-			/*
-				calls the function insertOne()
-				defined in the `database` object in `../models/db.js`
-				this function adds a document to collection `reservations`
-			*/
-			
-			if ( result ){
-				console.log('Reservation successfully added');
-				res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=true');
-			}
-			else{
-				res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=false');
-				console.log('Reservation failed to add');
-			}
-		}
-
+            await ReservationRepository.createReservation(reservationData);
+            res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=true');
+        } catch (error) {
+            console.error('Error creating reservation:', error);
+            res.redirect('/Reservation?idNumber=' + req.body.adminId + '&reserveUserSuccess=false');
+        }
     },
 
-	postUpdateReservations: async function (req, res){
-		var curr ={
-			startCampus: req.body.eCurrStartCampus,
-			date: req.body.eCurrDate,
-			entryLoc: req.body.eCurrEntryLoc,
-			entryTime: req.body.eCurrEntryTime,
-			exitLoc: req.body.eCurrExitLoc,
-			exitTime: req.body.eCurrExitTime,
-			idNumber: req.body.eCurrIdNumber
-		}
+    postUpdateReservations: async function (req, res) {
+        try {
+            const currentData = {
+                startCampus: req.body.eCurrStartCampus,
+                date: req.body.eCurrDate,
+                entryLoc: req.body.eCurrEntryLoc,
+                entryTime: req.body.eCurrEntryTime,
+                exitLoc: req.body.eCurrExitLoc,
+                exitTime: req.body.eCurrExitTime,
+                idNumber: req.body.eCurrIdNumber
+            };
 
-		var upd = {
-			startCampus: req.body.ehiddenStartCampus,
-			date: req.body.user_date,
-			entryLoc: req.body.ehiddenEntryLoc,
-			entryTime: req.body.ehiddenEntryTime,
-			exitLoc: req.body.ehiddenExitLoc,
-			exitTime: req.body.ehiddenExitTime,
-			idNumber: req.body.ehiddenIdNumber
-		}
-		
-		if ( upd.entryLoc == "Entry Location" || upd.entryTime == "Entry Time" || upd.exitLoc == "Exit Location" || upd.exitTime == "Exit Time" ){
-			res.redirect('/Reservation?idNumber=' + req.body.ehiddenIdNumber + '&isUpdateSuccess=false');
-			console.log('Reservation failed to add');
-		}
-		else{
-			
-			console.log(upd.entryLoc);
-			console.log(upd.entryTime);
-			console.log(upd.exitLoc);
-			console.log(upd.exitTime);
+            const newData = {
+                startCampus: req.body.ehiddenStartCampus,
+                date: req.body.user_date,
+                entryLoc: req.body.ehiddenEntryLoc,
+                entryTime: req.body.ehiddenEntryTime,
+                exitLoc: req.body.ehiddenExitLoc,
+                exitTime: req.body.ehiddenExitTime,
+                idNumber: req.body.ehiddenIdNumber
+            };
 
-			// TODO: Refactor to use a repository design pattern
-			var found = await db.findOne(Reservation, curr);
-			if(found){
-				// TODO: Refactor to use a repository design pattern
-				await Reservation.updateOne(curr, upd);
-				console.log('succesfully updated');
-				res.redirect('/Reservation?idNumber=' + req.body.ehiddenIdNumber + '&isUpdateSuccess=true');
-			}
-			else{
-				console.log("Code monkeys did an oopsie daisy");
-				console.log('error somewhere');
-			}
-		}
+            if (newData.entryLoc === "Entry Location" || 
+                newData.entryTime === "Entry Time" || 
+                newData.exitLoc === "Exit Location" || 
+                newData.exitTime === "Exit Time") {
+                return res.redirect('/Reservation?idNumber=' + newData.idNumber + '&isUpdateSuccess=false');
+            }
 
-		
-	},
+            const existingReservation = await ReservationRepository.findReservation(currentData);
+            if (!existingReservation) {
+                throw new Error('Reservation not found');
+            }
 
-	postDelete: async function (req, res){
-		var rsv = {
-			startCampus: req.body.dCurrStartCampus,
-			date: req.body.dCurrDate,
-			entryLoc: req.body.dCurrEntryLoc,
-			entryTime: req.body.dCurrEntryTime,
-			exitLoc: req.body.dCurrExitLoc,
-			exitTime: req.body.dCurrExitTime,
-			idNumber: req.body.dCurrIdNumber
-		};
+            await ReservationRepository.updateReservation(currentData, newData);
+            res.redirect('/Reservation?idNumber=' + newData.idNumber + '&isUpdateSuccess=true');
+        } catch (error) {
+            console.error('Error updating reservation:', error);
+            res.redirect('/Reservation?idNumber=' + req.body.ehiddenIdNumber + '&isUpdateSuccess=false');
+        }
+    },
 
-		console.log('to delete');
-		console.log(rsv);
-		// TODO: Refactor to use a repository design pattern
-		var deleted = await Reservation.deleteOne(rsv);
-		if(deleted){
-			console.log('succesfully deleted');
-			res.redirect('/Reservation?idNumber=' + req.body.dCurrIdNumber + '&isDeleteSuccess=true');
-		}
-		else{
-			console.log("Code monkeys did an oopsie daisy");
-			console.log('error somewhere');
-		}
+    postDelete: async function (req, res) {
+        try {
+            const reservationData = {
+                startCampus: req.body.dCurrStartCampus,
+                date: req.body.dCurrDate,
+                entryLoc: req.body.dCurrEntryLoc,
+                entryTime: req.body.dCurrEntryTime,
+                exitLoc: req.body.dCurrExitLoc,
+                exitTime: req.body.dCurrExitTime,
+                idNumber: req.body.dCurrIdNumber
+            };
 
-	},
+            await ReservationRepository.deleteReservation(reservationData);
+            res.redirect('/Reservation?idNumber=' + reservationData.idNumber + '&isDeleteSuccess=true');
+        } catch (error) {
+            console.error('Error deleting reservation:', error);
+            res.redirect('/Reservation?idNumber=' + req.body.dCurrIdNumber + '&isDeleteSuccess=false');
+        }
+    },
 
-	getSearchUser: async function (req, res){
+    getSearchUser: function (req, res) {
+        res.render('SearchUser');
+    },
 
-		res.redirect('/ReservationAdmin?idNumber=' + req.query.idNumber);
+    postSearchUser: async function (req, res) {
+        try {
+            const { payload } = req.body;
+            const searchTerm = payload.trim();
+            const users = await UserRepository.searchUsers(searchTerm);
+            res.send({ payload: users });
+        } catch (error) {
+            console.error('Error searching users:', error);
+            res.status(500).send({ error: 'Search failed' });
+        }
+    },
 
-	},
+    postSearchUserUpdate: async function (req, res) {
+        try {
+            const currentData = {
+                startCampus: req.body.eCurrStartCampus,
+                date: req.body.eCurrDate,
+                entryLoc: req.body.eCurrEntryLoc,
+                entryTime: req.body.eCurrEntryTime,
+                exitLoc: req.body.eCurrExitLoc,
+                exitTime: req.body.eCurrExitTime,
+                idNumber: req.body.eCurrIdNumber
+            };
 
-	postSearchUser: async function (req, res){
+            const newData = {
+                startCampus: req.body.ehiddenStartCampus,
+                date: req.body.user_date,
+                entryLoc: req.body.ehiddenEntryLoc,
+                entryTime: req.body.ehiddenEntryTime,
+                exitLoc: req.body.ehiddenExitLoc,
+                exitTime: req.body.ehiddenExitTime,
+                idNumber: req.body.ehiddenIdNumber
+            };
 
-		var idNumber = req.body.user_idNumber;
-		var adminId = req.body.adminId;
+            if (newData.entryLoc === "Entry Location" || 
+                newData.entryTime === "Entry Time" || 
+                newData.exitLoc === "Exit Location" || 
+                newData.exitTime === "Exit Time") {
+                return res.redirect('/ReservationAdmin?idNumber=' + req.body.adminId + '&isUpdateSuccess=false');
+            }
 
-		// TODO: Refactor to use a repository design pattern
-		const isFoundUser = await db.findOne(User, {idNumber: idNumber}, {idNumber: 1});
-		// TODO: Refactor to use a repository design pattern
-		const isFoundAdmin = await db.findOne(Admin, {idNumber: idNumber}, {idNumber: 1});
+            const existingReservation = await ReservationRepository.findReservation(currentData);
+            if (!existingReservation) {
+                throw new Error('Reservation not found');
+            }
 
-		if ( isFoundUser == null && isFoundAdmin == null ){
-			res.redirect('/ReservationAdmin?idNumber=' + adminId + '&isSearchUserValid=false');
-		}
-		else{
+            await ReservationRepository.updateReservation(currentData, newData);
+            res.redirect('/ReservationAdmin?idNumber=' + req.body.adminId + '&isUpdateSuccess=true');
+        } catch (error) {
+            console.error('Error updating user reservation:', error);
+            res.redirect('/ReservationAdmin?idNumber=' + req.body.adminId + '&isUpdateSuccess=false');
+        }
+    },
 
-			console.log('test');
+    postSearchUserDelete: async function (req, res) {
+        try {
+            const reservationData = {
+                startCampus: req.body.dCurrStartCampus,
+                date: req.body.dCurrDate,
+                entryLoc: req.body.dCurrEntryLoc,
+                entryTime: req.body.dCurrEntryTime,
+                exitLoc: req.body.dCurrExitLoc,
+                exitTime: req.body.dCurrExitTime,
+                idNumber: req.body.dCurrIdNumber
+            };
 
-			// TODO: Refactor to use a repository design pattern
-			const result = await db.findMany(Reservation, {idNumber: idNumber}, "");
-
-			if ( result.length !== 0 ){
-				res.render('ReservationAdmin', {result: result, adminId: adminId});
-			} 
-			else {
-				res.redirect('/ReservationAdmin?idNumber=' + adminId + '&reservationList=false');
-			}
-
-		}
-		
-		
-
-	},
-
-	postSearchUserUpdate: async function (req, res){
-		var curr ={
-			startCampus: req.body.eCurrStartCampus,
-			date: req.body.eCurrDate,
-			entryLoc: req.body.eCurrEntryLoc,
-			entryTime: req.body.eCurrEntryTime,
-			exitLoc: req.body.eCurrExitLoc,
-			exitTime: req.body.eCurrExitTime,
-			idNumber: req.body.eCurrIdNumber
-		}
-
-		var upd = {
-			startCampus: req.body.ehiddenStartCampus,
-			date: req.body.user_date,
-			entryLoc: req.body.ehiddenEntryLoc,
-			entryTime: req.body.ehiddenEntryTime,
-			exitLoc: req.body.ehiddenExitLoc,
-			exitTime: req.body.ehiddenExitTime,
-			idNumber: req.body.ehiddenIdNumber
-		}
-
-		console.log("current reservation:");
-		console.log(curr);
-		console.log("To be updated with: ");
-		console.log(upd);
-
-		if ( upd.entryLoc == "Entry Location" || upd.entryTime == "Entry Time" || upd.exitLoc == "Exit Location" || upd.exitTime == "Exit Time" ){
-
-			var adminId = req.body.eAdminId;
-			if (adminId == null){
-				console.log("OH NO THE CODE MONKEYS DID AN OOPSIE WOOPSIE");
-				adminId = 1111111;
-			}
-			// TODO: Refactor to use a repository design pattern
-			const result = await db.findMany(Reservation, {idNumber: upd.idNumber}, {_id:0, __v:0});
-
-			res.render('ReservationAdmin', {result, result, adminId: adminId, isUpdateSuccess: false});
-			console.log('Reservation failed to add');
-
-		}
-		else{
-			
-			// TODO: Refactor to use a repository design pattern
-			var found = await db.findOne(Reservation, curr);
-			if(found){
-				// TODO: Refactor to use a repository design pattern
-				await Reservation.updateOne(curr, upd);
-				console.log('Succesfully updated');
-				
-				var adminId = req.body.eAdminId;
-				if (adminId == null){
-					console.log("OH NO THE CODE MONKEYS DID AN OOPSIE WOOPSIE");
-					adminId = 1111111;
-				}
-				// TODO: Refactor to use a repository design pattern
-				const result = await db.findMany(Reservation, {idNumber: upd.idNumber}, {_id:0, __v:0});
-				res.render('ReservationAdmin', {result: result, adminId: adminId, isUpdateSuccess: true});
-			}
-			else{
-				console.log("Code monkeys did an oopsie daisy");
-				console.log('error somewhere');
-			}
-		}
-		
-
-	},
-
-	postSearchUserDelete: async function (req, res){
-		var rsv = {
-			startCampus: req.body.dCurrStartCampus,
-			date: req.body.dCurrDate,
-			entryLoc: req.body.dCurrEntryLoc,
-			entryTime: req.body.dCurrEntryTime,
-			exitLoc: req.body.dCurrExitLoc,
-			exitTime: req.body.dCurrExitTime,
-			idNumber: req.body.dCurrIdNumber
-		};
-
-		console.log('to delete');
-		console.log(rsv);
-		// TODO: Refactor to use a repository design pattern
-		var deleted = await Reservation.deleteOne(rsv);
-		if(deleted){
-			console.log('succesfully deleted');
-			
-			var adminId = req.body.dAdminId;
-			if (adminId == null){
-				console.log("OH NO THE CODE MONKEYS DID AN OOPSIE WOOPSIE");
-				adminId = 1111111;
-			}
-			// TODO: Refactor to use a repository design pattern
-			const result = await db.findMany(Reservation, {idNumber: rsv.idNumber}, {_id:0, __v:0});
-			res.render('ReservationAdmin', {result: result, adminId: adminId, isDeleteSuccess: true});
-		}
-		else{
-			console.log("Code monkeys did an oopsie daisy");
-			console.log('error somewhere');
-		}
-
-	}
-    
-}
+            await ReservationRepository.deleteReservation(reservationData);
+            res.redirect('/ReservationAdmin?idNumber=' + req.body.adminId + '&isDeleteSuccess=true');
+        } catch (error) {
+            console.error('Error deleting user reservation:', error);
+            res.redirect('/ReservationAdmin?idNumber=' + req.body.adminId + '&isDeleteSuccess=false');
+        }
+    }
+};
 
 module.exports = reservationController;

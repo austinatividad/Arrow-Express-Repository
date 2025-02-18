@@ -2,6 +2,64 @@ const Reservation = require('../models/reservationdb.js');
 
 const ReservationRepository = {
     /**
+     * Create a new reservation.
+     * @param {object} reservationData - The reservation data.
+     * @returns {Promise<object>} The created reservation.
+     */
+    createReservation: async function (reservationData) {
+        try {
+            const reservation = new Reservation(reservationData);
+            return await reservation.save();
+        } catch (error) {
+            console.error("Error creating reservation:", error);
+            throw new Error("Failed to create reservation");
+        }
+    },
+
+    /**
+     * Find a specific reservation.
+     * @param {object} query - The query to find the reservation.
+     * @returns {Promise<object>} The found reservation.
+     */
+    findReservation: async function (query) {
+        try {
+            return await Reservation.findOne(query);
+        } catch (error) {
+            console.error("Error finding reservation:", error);
+            throw new Error("Failed to find reservation");
+        }
+    },
+
+    /**
+     * Update a reservation.
+     * @param {object} currentData - The current reservation data.
+     * @param {object} newData - The new reservation data.
+     * @returns {Promise<object>} The updated reservation.
+     */
+    updateReservation: async function (currentData, newData) {
+        try {
+            return await Reservation.updateOne(currentData, newData);
+        } catch (error) {
+            console.error("Error updating reservation:", error);
+            throw new Error("Failed to update reservation");
+        }
+    },
+
+    /**
+     * Delete a reservation.
+     * @param {object} query - The query to find the reservation to delete.
+     * @returns {Promise<object>} The deletion result.
+     */
+    deleteReservation: async function (query) {
+        try {
+            return await Reservation.deleteOne(query);
+        } catch (error) {
+            console.error("Error deleting reservation:", error);
+            throw new Error("Failed to delete reservation");
+        }
+    },
+
+    /**
      * Find all reservations for a user.
      * @param {string} idNumber - The ID number of the user.
      * @returns {Promise<Array>} Array of reservations.
