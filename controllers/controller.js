@@ -5,6 +5,8 @@ const User = require('../models/userdb.js');
 
 const Admin = require('../models/admindb.js');
 
+const UserRepository = require('../repositories/UserRepository.js');
+
 /*
     defines an object which contains functions executed as callback
     when a client requests for a certain path in the server
@@ -17,18 +19,10 @@ const controller = {
 
         if ( req.session.idNumber ) {
 
-            const query = { idNumber: req.session.idNumber };
-            const projection = { firstName: 1};
-            const result = await db.findOne(User, query, projection);
-            const result2 = await db.findOne(Admin, query, projection);
-
-            if (result) {
+            const user = await UserRepository.getUserById(req.session.idNumber) ?? await UserRepository.getAdminById(req.session.idNumber);
+            if (user) {
                 details = {
-                    firstName : result.firstName,
-                };
-            } else if (result2) {
-                details = {
-                    firstName : result2.firstName,
+                    firstName: user.firstName,
                 };
             }
 
@@ -69,12 +63,9 @@ const controller = {
         if ( req.session.idNumber != req.query.idNumber) {
             res.status(200).redirect('/Settings?idNumber=' + req.session.idNumber);     
         } else {
-
-            var query = {idNumber: req.query.idNumber};
-            const projection = 'idNumber firstName lastName designation passengerType';
-    
-            const resultUser = await db.findOne(User, query, projection);
-            const resultAdmin = await db.findOne(Admin, query, projection);
+            
+            const resultUser = await UserRepository.getUserById(req.session.idNumber);
+            const resultAdmin = await UserRepository.getAdminById(req.session.idNumber);
     
             var details = {};
             
