@@ -1,305 +1,226 @@
-const db = require('../models/db.js');
-
-const User = require('../models/userdb.js');
-
-const Admin = require('../models/admindb.js');
-
-const Reservation = require('../models/reservationdb.js');
-
-// import module `bcrypt`
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
+const UserRepository = require('../repositories/UserRepository.js');
+const AdminRepository = require('../repositories/AdminRepository.js');
+const ReservationRepository = require('../repositories/ReservationRepository.js');
 
 const profileController = {
     getProfile: async function (req, res) {
-      if ( req.session.idNumber != req.query.idNumber ) {
-        const query = { idNumber: req.session.idNumber };
-        const projection = { idNumber: 1 };
-        // TODO: Refactor to use a repository design pattern
-        const result = await db.findOne(User, query, projection);
-        // TODO: Refactor to use a repository design pattern
-        const result2 = await db.findOne(Admin, query, projection);
-        if (result) {
-          res.status(200).redirect('/Profile?idNumber=' + req.session.idNumber);     
-        } else if (result2) {
-          res.status(200).redirect('/ProfileAdmin?idNumber=' + req.session.idNumber);  
+        try {
+            if (req.session.idNumber != req.query.idNumber) {
+                const user = await UserRepository.findById(req.session.idNumber);
+                const admin = await AdminRepository.findById(req.session.idNumber);
+                
+                if (user) {
+                    return res.status(200).redirect('/Profile?idNumber=' + req.session.idNumber);     
+                } else if (admin) {
+                    return res.status(200).redirect('/ProfileAdmin?idNumber=' + req.session.idNumber);  
+                }
+            } else {
+                const user = await UserRepository.findById(req.query.idNumber);
+                
+                if (user) {
+                    const details = {
+                        idNumber: user.idNumber,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        designation: user.designation,
+                        passengerType: user.passengerType,
+                        profilePicture: user.profilePicture === "public/images/profilepictures/Default.png" || !user.profilePicture
+                            ? "images/profilepictures/Default.png"
+                            : user.profilePicture
+                    };
+                    
+                    return res.render('Profile', details);
+                }
+            }
+            res.render('Error', res);
+        } catch (error) {
+            console.error('Profile retrieval error:', error);
+            res.status(500).render('Error', { error: 'Failed to retrieve profile' });
         }
-      }
-      else{
-        const query = {idNumber: req.query.idNumber};
-        const projection = 'idNumber firstName lastName designation passengerType profilePicture';
-        // TODO: Refactor to use a repository design pattern
-        const result = await db.findOne(User, query, projection);
-      
-        if (result != null) {
-          const details = {
-            idNumber: result.idNumber,
-            firstName: result.firstName,
-            lastName: result.lastName,
-            designation: result.designation,
-            passengerType: result.passengerType
-          };
-
-          if ( result.profilePicture == "public/images/profilepictures/Default.png" || result.profilePicture == null) {
-            details.profilePicture = "images/profilepictures/Default.png"
-          }
-          else if ( result.profilePicture != "public/images/profilepictures/Default.png") {
-            details.profilePicture = result.profilePicture;
-          }
-          else{
-            details.profilePicture = "images/profilepictures/Default.png";
-          }
-      
-          res.render('Profile', details);
-          
-        } else {
-          res.render('Error',res);
-        }
-      }
-        
     },
 
     getProfileAdmin: async function (req, res) {
-
-      if ( req.session.idNumber != req.query.idNumber ) {
-        const query = { idNumber: req.session.idNumber };
-        const projection = { idNumber: 1 };
-        // TODO: Refactor to use a repository design pattern
-        const result = await db.findOne(User, query, projection);
-        // TODO: Refactor to use a repository design pattern
-        const result2 = await db.findOne(Admin, query, projection);
-        if (result) {
-          res.status(200).redirect('/Profile?idNumber=' + req.session.idNumber);     
-        } else if (result2) {
-          res.status(200).redirect('/ProfileAdmin?idNumber=' + req.session.idNumber);  
-        }
-      }
-      else{
-        var query = {idNumber: req.query.idNumber};
-        var projection = 'idNumber firstName lastName designation passengerType profilePicture';
-
-        // TODO: Refactor to use a repository design pattern
-        const result = await db.findOne(Admin, query, projection);
-        
-        if (result != null) {
-
-            const details = {
-                idNumber: result.idNumber,
-                firstName: result.firstName,
-                lastName: result.lastName,
-                designation: result.designation,
-                passengerType: result.passengerType
-            };
-
-            if ( result.profilePicture == "public/images/profilepictures/Default.png" ) {
-              details.profilePicture = "public/images/profilepictures/Default.png"
+        try {
+            if (req.session.idNumber != req.query.idNumber) {
+                const user = await UserRepository.findById(req.session.idNumber);
+                const admin = await AdminRepository.findById(req.session.idNumber);
+                
+                if (user) {
+                    return res.status(200).redirect('/Profile?idNumber=' + req.session.idNumber);     
+                } else if (admin) {
+                    return res.status(200).redirect('/ProfileAdmin?idNumber=' + req.session.idNumber);  
+                }
+            } else {
+                const admin = await AdminRepository.findById(req.query.idNumber);
+                
+                if (admin) {
+                    const details = {
+                        idNumber: admin.idNumber,
+                        firstName: admin.firstName,
+                        lastName: admin.lastName,
+                        designation: admin.designation,
+                        passengerType: admin.passengerType,
+                        profilePicture: admin.profilePicture === "public/images/profilepictures/Default.png" || !admin.profilePicture
+                            ? "images/profilepictures/Default.png"
+                            : admin.profilePicture
+                    };
+                    
+                    return res.render('ProfileAdmin', details);
+                }
             }
-            else if ( result.profilePicture != "public/images/profilepictures/Default.png") {
-              details.profilePicture = result.profilePicture;
-            }
-            else{
-              details.profilePicture = "public/images/profilepictures/Default.png";
-            }
-
-            res.render('ProfileAdmin', details);
+            res.render('Error', res);
+        } catch (error) {
+            console.error('Admin profile retrieval error:', error);
+            res.status(500).render('Error', { error: 'Failed to retrieve admin profile' });
         }
-        else {
-            res.render('Error',res);
-        }
-        
-      }
-
     },
 
     postChangePublicInfo: async function (req, res) {
-      var query = {idNumber: req.body.idNumber };
-      const projection = { idNumber: 1, firstName: 1, lastName: 1, designation: 1, passengerType: 1 };
+        try {
+            const { idNumber, newFirstName, newLastName } = req.body;
+            const updateData = {};
 
-      // TODO: Refactor to use a repository design pattern
-      const resultUser = await db.findOne(User, query, projection);
-      // TODO: Refactor to use a repository design pattern
-      const resultAdmin = await db.findOne(Admin, query, projection);
+            if (newFirstName && newLastName) {
+                updateData.firstName = newFirstName;
+                updateData.lastName = newLastName;
+            }
 
-      if (resultUser != null && (req.body.newFirstName != "" && req.body.newLastName != "") ) {
-        // TODO: Refactor to use a repository design pattern
-        await User.updateOne(query, {firstName: req.body.newFirstName, lastName: req.body.newLastName})
-        console.log("User public info change successful");
-        res.redirect('/Profile?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
-      }
-      else if (resultAdmin != null && (req.body.newFirstName != "" && req.body.newLastName != "") ) {
-        // TODO: Refactor to use a repository design pattern
-        await Admin.updateOne(query, {firstName: req.body.newFirstName, lastName: req.body.newLastName})
-        console.log("Admin user public info change successful");
-        res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
-      } 
-      else if ( ( resultUser != null || resultAdmin != null ) && req.file.originalname != null ){
+            if (req.file?.originalname) {
+                updateData.profilePicture = `images/profilepictures/${idNumber}.png`;
+            }
 
-        if ( resultUser ){
-          // TODO: Refactor to use a repository design pattern
-          await User.updateOne(query, {profilePicture: "images/profilepictures/" + req.body.idNumber + ".png"})
-          res.redirect('/Profile?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
+            if (Object.keys(updateData).length === 0) {
+                return res.redirect('/Settings?idNumber=' + idNumber + '&infoChangeSuccess=false');
+            }
+
+            const user = await UserRepository.findById(idNumber);
+            if (user) {
+                await UserRepository.updateProfile(idNumber, updateData);
+                return res.redirect('/Profile?idNumber=' + idNumber + '&infoChangeSuccess=true');
+            }
+
+            const admin = await AdminRepository.findById(idNumber);
+            if (admin) {
+                await AdminRepository.updateProfile(idNumber, updateData);
+                return res.redirect('/ProfileAdmin?idNumber=' + idNumber + '&infoChangeSuccess=true');
+            }
+
+            res.redirect('/Settings?idNumber=' + idNumber + '&infoChangeSuccess=false');
+        } catch (error) {
+            console.error('Public info update error:', error);
+            res.redirect('/Settings?idNumber=' + req.body.idNumber + '&infoChangeSuccess=false');
         }
-        else if ( resultAdmin ){
-          // TODO: Refactor to use a repository design pattern
-          await Admin.updateOne(query, {profilePicture: "images/profilepictures/" + req.body.idNumber + ".png"})
-          res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
-        }
-
-      }
-      else {
-        console.log("User/Admin public info change unsuccessful");
-        res.redirect('/Settings?idNumber=' + req.body.idNumber + '&infoChangeSuccess=false');
-      }
-     
-
     },
 
     postChangePrivateInfo: async function (req, res) {
-      var query = {idNumber: req.body.idNumber };
-      const projection = { idNumber: 1, designation: 1};
+        try {
+            const { idNumber, newDesignation } = req.body;
+            const updateData = { designation: newDesignation };
 
-      // TODO: Refactor to use a repository design pattern
-      const resultUser = await db.findOne(User, query, projection);
-      // TODO: Refactor to use a repository design pattern
-      const resultAdmin = await db.findOne(Admin, query, projection);
-     
-      if (resultUser != null ) {
-        // TODO: Refactor to use a repository design pattern
-        await User.updateOne(query, {designation: req.body.newDesignation})
-        console.log("User private info change successful");
-        res.redirect('/Profile?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
-      }
-      else if (resultAdmin != null ) {
-        // TODO: Refactor to use a repository design pattern
-        await Admin.updateOne(query, {designation: req.body.newDesignation})
-        console.log("Admin user private info change successful");
-        res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&infoChangeSuccess=true');
-      }
-      else {
-        console.log("User/Admin private info change unsuccessful");
-        res.redirect('/Settings?idNumber=' + req.body.idNumber + '&infoChangeSuccess=false');
-      }
+            const user = await UserRepository.findById(idNumber);
+            if (user) {
+                await UserRepository.updateProfile(idNumber, updateData);
+                return res.redirect('/Profile?idNumber=' + idNumber + '&infoChangeSuccess=true');
+            }
 
+            const admin = await AdminRepository.findById(idNumber);
+            if (admin) {
+                await AdminRepository.updateProfile(idNumber, updateData);
+                return res.redirect('/ProfileAdmin?idNumber=' + idNumber + '&infoChangeSuccess=true');
+            }
+
+            res.redirect('/Settings?idNumber=' + idNumber + '&infoChangeSuccess=false');
+        } catch (error) {
+            console.error('Private info update error:', error);
+            res.redirect('/Settings?idNumber=' + req.body.idNumber + '&infoChangeSuccess=false');
+        }
     },
 
     postChangePassword: async function (req, res) {
-      var query = {idNumber: req.body.idNumber};
-      const projection = { idNumber: 1, password: 1 };
+        try {
+            const { idNumber, currentPassword, newPassword } = req.body;
 
-      // TODO: Refactor to use a repository design pattern
-      const resultUser = await db.findOne(User, query, projection);
-      // TODO: Refactor to use a repository design pattern
-      const resultAdmin = await db.findOne(Admin, query, projection);
+            const user = await UserRepository.findById(idNumber);
+            if (user) {
+                await UserRepository.updatePassword(idNumber, currentPassword, newPassword);
+                return res.redirect('/Profile?idNumber=' + idNumber + '&pwChangeSuccess=true');
+            }
 
-      if (resultUser != null && await bcrypt.compare(req.body.currentPassword, resultUser.password) ) {
-        // TODO: Refactor to use a repository design pattern
-        await User.updateOne(query, {password: await bcrypt.hash(req.body.newPassword, saltRounds)})
-        console.log("User password change successful");
-        res.redirect('/Profile?idNumber=' + req.body.idNumber + '&pwChangeSuccess=true');
-      }
-      else if (resultAdmin != null && await bcrypt.compare(req.body.currentPassword, resultAdmin.password)) {
-        // TODO: Refactor to use a repository design pattern
-        await Admin.updateOne(query, {password: await bcrypt.hash(req.body.newPassword, saltRounds)} )
-        console.log("Admin user password change successful");
-        res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&pwChangeSuccess=true');
-      }
-      else {
-        console.log("User/Admin password change unsuccessful");
-        res.redirect('/Settings?idNumber=' + req.body.idNumber + '&pwChangeSuccess=false');
-      }
+            const admin = await AdminRepository.findById(idNumber);
+            if (admin) {
+                await AdminRepository.updatePassword(idNumber, currentPassword, newPassword);
+                return res.redirect('/ProfileAdmin?idNumber=' + idNumber + '&pwChangeSuccess=true');
+            }
 
+            res.redirect('/Settings?idNumber=' + idNumber + '&pwChangeSuccess=false');
+        } catch (error) {
+            console.error('Password change error:', error);
+            res.redirect('/Settings?idNumber=' + req.body.idNumber + '&pwChangeSuccess=false');
+        }
     },
 
     postChangeCode: async function (req, res) {
-      
-      var query = {idNumber: req.body.idNumber};
-      const projection = { idNumber: 1, securityCode: 1 };
-    
-      // TODO: Refactor to use a repository design pattern
-      const resultUser = await db.findOne(User, query, projection);
-      // TODO: Refactor to use a repository design pattern
-      const resultAdmin = await db.findOne(Admin, query, projection);
+        try {
+            const { idNumber, currentSecCode: currentCode, newSecCode: newCode } = req.body;
 
-      if (resultUser != null && await bcrypt.compare(req.body.currentSecCode, resultUser.securityCode)) {
-        // TODO: Refactor to use a repository design pattern
-        await User.updateOne(query, {securityCode: await bcrypt.hash(req.body.newSecCode, saltRounds)});
-        console.log("User code change successful");
-        res.redirect('/Profile?idNumber=' + req.body.idNumber + '&codeChangeSuccess=true');
-      }
-      else if (resultAdmin != null && await bcrypt.compare(req.body.currentSecCode, resultAdmin.securityCode)) {
-        // TODO: Refactor to use a repository design pattern
-        await Admin.updateOne(query, {securityCode: await bcrypt.hash(req.body.newSecCode, saltRounds)});
-        console.log("User code change successful");
-        res.redirect('/ProfileAdmin?idNumber=' + req.body.idNumber + '&codeChangeSuccess=true');
-      }
-      else {
-        console.log(req.body.currentSecCode);
-        console.log(req.body.newSecCode);
-        
-        console.log("User/Admin security code change unsuccessful");
-        res.redirect('/Settings?idNumber=' + req.body.idNumber + '&codeChangeSuccess=false');
-      }
+            const user = await UserRepository.findById(idNumber);
+            if (user) {
+                await UserRepository.updateSecurityCode(idNumber, currentCode, newCode);
+                return res.redirect('/Profile?idNumber=' + idNumber + '&codeChangeSuccess=true');
+            }
 
+            const admin = await AdminRepository.findById(idNumber);
+            if (admin) {
+                await AdminRepository.updateSecurityCode(idNumber, currentCode, newCode);
+                return res.redirect('/ProfileAdmin?idNumber=' + idNumber + '&codeChangeSuccess=true');
+            }
+
+            res.redirect('/Settings?idNumber=' + idNumber + '&codeChangeSuccess=false');
+        } catch (error) {
+            console.error('Security code change error:', error);
+            res.redirect('/Settings?idNumber=' + req.body.idNumber + '&codeChangeSuccess=false');
+        }
     },
 
     postDeleteAccount: async function (req, res) {
-      var query = {idNumber: req.body.idNumber};
-      const projection = { idNumber: 1, password: 1 };
-    
-      // TODO: Refactor to use a repository design pattern
-      const resultUser = await db.findOne(User, query, projection);
-      // TODO: Refactor to use a repository design pattern
-      const resultAdmin = await db.findOne(Admin, query, projection);
+        try {
+            const { idNumber, Password: password } = req.body;
 
-      var details = {};
-  
-      if (resultUser != null && await bcrypt.compare(req.body.Password, resultUser.password) ) {
-        // TODO: Refactor to use a repository design pattern
-        await User.deleteOne(query);
-        // TODO: Refactor to use a repository design pattern
-        await Reservation.deleteMany(query);
+            const user = await UserRepository.findById(idNumber);
+            if (user) {
+                await UserRepository.deleteAccount(idNumber, password);
+                await ReservationRepository.deleteAllReservations(idNumber);
+                req.session.destroy();
+                return res.render('Login', { accountDeleted: true });
+            }
 
-        details = {
-          firstName : 'Login',
+            const admin = await AdminRepository.findById(idNumber);
+            if (admin) {
+                await AdminRepository.deleteAccount(idNumber, password);
+                await ReservationRepository.deleteAllReservations(idNumber);
+                req.session.destroy();
+                return res.render('Login', { accountDeleted: true });
+            }
+
+            res.render('Settings', { 
+                idNumber: idNumber,
+                deleteAccountSuccess: false,
+                error: 'Account not found'
+            });
+        } catch (error) {
+            console.error('Account deletion error:', error);
+            res.render('Settings', { 
+                idNumber: req.body.idNumber,
+                deleteAccountSuccess: false,
+                error: error.message
+            });
         }
-        
-        req.session.destroy(function(err) {
-          if(err) throw err;
-          res.render('index', details);
-        });
-        
-      }
-      else if (resultAdmin != null && await bcrypt.compare(req.body.Password, resultAdmin.password) ) {
-        // TODO: Refactor to use a repository design pattern
-        await Admin.deleteOne(query);
-        // TODO: Refactor to use a repository design pattern
-        await Reservation.deleteMany(query);
-        console.log("Admin user deleted");
-
-        details = {
-          firstName : 'Login',
-        }
-        
-        req.session.destroy(function(err) {
-          if(err) throw err;
-          res.render('index', details);
-        });
-
-      }
-      else {
-        console.log("User/Admin not deleted");
-        res.redirect('/Settings?idNumber=' + req.body.idNumber + '&deleteSuccess=false');
-      }
-
     },
 
-    getLogout: function (req, res) {
-      req.session.destroy(function(err) {
-        if(err) throw err;
-        res.redirect('/');
-      });
+    getLogout: async function (req, res) {
+        req.session.destroy();
+        res.redirect('/Login');
     }
-    
-}
+};
 
 module.exports = profileController;
