@@ -5,6 +5,45 @@ const saltRounds = 10;
 const UserRepository = {
 
   /**
+   * Creates a new user.
+   * @param {object} userData - The user data to create the user with.
+   * @returns {Promise<object>} The created user object.
+   */
+  createUser: async function (userData) {
+    try {
+      const user = new User({
+        idNumber: userData.idNumber,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        designation: userData.designation,
+        passengerType: userData.passengerType,
+        password: await bcrypt.hash(userData.password, saltRounds),
+        securityCode: await bcrypt.hash(userData.securityCode, saltRounds),
+        profilePicture: userData.profilePicture || "public/images/profilepictures/Default.png"
+      });
+      
+      return await user.save();
+    } catch (error) {
+      console.error("Error creating user:", error);
+      throw new Error("Failed to create user");
+    }
+  },
+
+  /**
+   * Finds a user by their email.
+   * @param {string} email - The email of the user to find.
+   * @returns {Promise<object>} The user object if found, null otherwise.
+   */
+  findByEmail: async function (email) {
+    try {
+      return await User.findOne({ email }, 'email');
+    } catch (error) {
+      console.error("Error finding user by email:", error);
+      throw new Error("Database query failed");
+    }
+  },
+
+  /**
    * Finds a user by their ID number.
    * @param {string} idNumber - The ID number of the user to find.
    * @returns {Promise<object>} The user object if found, null otherwise.

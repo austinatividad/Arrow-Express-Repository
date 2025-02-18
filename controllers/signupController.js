@@ -1,99 +1,106 @@
-const db = require('../models/db.js');
-
+const UserRepository = require('../repositories/UserRepository.js');
+const AdminRepository = require('../repositories/AdminRepository.js');
 const { validationResult } = require('express-validator');
 
-// import module `bcrypt`
-const bcrypt = require('bcrypt');
-const saltRounds = 10;
-
-const User = require('../models/userdb.js');
-
-const Admin = require('../models/admindb.js');
-
 const signupController = {
-
     getSignUp: function (req, res) {
-        res.render('SignUp',res);
+        res.render('SignUp');
     },
 
     postSignUp: async function (req, res) {
+        try {
+            const errors = validationResult(req);
 
-        var errors = validationResult(req);
-
-        if ( !errors.isEmpty()){
-            errors = errors.errors;
-
-            var details = {};
-            for ( var i = 0; i < errors.length; i++ ){
-                details[errors[i].path + 'Error'] = errors[i].msg;
+            if (!errors.isEmpty()) {
+                const details = {};
+                for (const error of errors.errors) {
+                    details[error.path + 'Error'] = error.msg;
+                }
+                return res.render('SignUp', details);
             }
 
-            res.render('SignUp', details);
-        }else{
+            const { 
+                user_firstName: firstName,
+                user_lastName: lastName,
+                user_email: email,
+                user_idNumber: idNumber,
+                user_password: password,
+                user_securityCode: securityCode,
+                user_designation: designation,
+                user_passengerType: passengerType
+            } = req.body;
 
-            const user = {
-                firstName: req.body.user_firstName,
-                lastName: req.body.user_lastName,
-                email: req.body.user_email,
-                idNumber: req.body.user_idNumber,
-                password: await bcrypt.hash(req.body.user_password, saltRounds),
-                securityCode: await bcrypt.hash(req.body.user_securityCode, saltRounds),
-                designation: req.body.user_designation,
-                passengerType: req.body.user_passengerType,
-                profilePicture: "images/profilepictures/Default.png"
-            }
-    
-            // TODO: Refactor to use a repository design pattern
-            var result = await db.insertOne(User, user);
-    
-            if( result ){
-                console.log(result);
-                console.log('User successfully added');
-                res.render('Login', {isRegistered: true});
-            }
-            else{
-                console.log('User not added');
+            // Check if user already exists
+            const existingUser = await UserRepository.findById(idNumber);
+            const existingAdmin = await AdminRepository.findById(idNumber);
+
+            if (existingUser || existingAdmin) {
+                return res.render('SignUp', { 
+                    error: 'Account with this ID already exists',
+                    signupSuccess: false
+                });
             }
 
+            // Create new user account
+            await UserRepository.createUser({
+                idNumber,
+                firstName,
+                lastName,
+                email,
+                designation,
+                passengerType,
+                password,
+                securityCode,
+                profilePicture: "public/images/profilepictures/Default.png"
+            });
+
+            res.render('Login', { isRegistered: true });
+        } catch (error) {
+            console.error('Signup error:', error);
+            res.render('SignUp', { 
+                error: error.message || 'Failed to create account',
+                signupSuccess: false
+            });
         }
-        
     },
 
     getCheckID: async function (req, res) {
+        try {
+            const { idNumber } = req.query;
+            const user = await UserRepository.findById(idNumber);
+            const admin = await AdminRepository.findById(idNumber);
 
-        
-        var idNumber = req.query.idNumber;
-        // TODO: Refactor to use a repository design pattern
-        var result = await db.findOne(User, {idNumber: idNumber});
-        // TODO: Refactor to use a repository design pattern
-        var result2 = await db.findOne(Admin, {idNumber: idNumber});
-        if ( result ){
-            res.send(result);
-        }else if (result2) {
-            res.send(result2);
-        }else{
-            res.send(null);
+            if (user) {
+                res.send(user);
+            } else if (admin) {
+                res.send(admin);
+            } else {
+                res.send(null);
+            }
+        } catch (error) {
+            console.error('Check ID error:', error);
+            res.status(500).send(null);
         }
-        
     },
 
     getCheckEmail: async function (req, res) {
+        try {
+            const { email } = req.query;
+            const user = await UserRepository.findByEmail(email);
+            const admin = await AdminRepository.findByEmail(email);
 
-        var email = req.query.email;
-        // TODO: Refactor to use a repository design pattern
-        var result = await db.findOne(User, {email: email}, 'email');
-        // TODO: Refactor to use a repository design pattern
-        var result2 = await db.findOne(Admin, {email: email}, 'email');
-        if ( result ){
-            res.send(result);
-        }else if (result2) {
-            res.send(result2);
-        }else{
-            res.send(null);
+            if (user) {
+                res.send(user);
+            } else if (admin) {
+                res.send(admin);
+            } else {
+                res.send(null);
+            }
+        } catch (error) {
+            console.error('Check email error:', error);
+            res.status(500).send(null);
         }
-
-    },
-
-}
+    }
+};
 
 module.exports = signupController;
