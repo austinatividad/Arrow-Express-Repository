@@ -4,7 +4,7 @@ const AdminRepository = require('../repositories/AdminRepository.js');
 const forgotPassController = {
 
     getForgotPassword: function (req, res) {
-        res.render('ForgotPassword', res);
+        res.render('ForgotPassword');
     },
 
     postForgotPassword: async function (req, res){

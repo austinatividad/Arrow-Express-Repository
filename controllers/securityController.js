@@ -25,7 +25,7 @@ const securityController = {
 
     postVerifySecurityCode: async function (req, res) {
         try {
-            const { idNumber, securityCode } = req.body;
+            const { idNumber, user_securityCode: securityCode } = req.body;
 
             const user = await UserRepository.findById(idNumber);
             if (user) {
@@ -46,16 +46,17 @@ const securityController = {
                 if (isValid) {
                     return res.redirect('/ChangePasswordAdmin?idNumber=' + idNumber);
                 }
-                return res.render('SecurityAdmin', { 
+                return res.render('Security', { 
                     idNumber, 
                     error: 'Invalid security code',
-                    verifySuccess: false 
+                    verifySuccess: false,
+                    isAdmin: true
                 });
             }
 
             res.render('Error', { error: 'Account not found' });
         } catch (error) {
-            console.error('Security code verification error:', error);
+            console.error('Security verification error:', error);
             res.render('Error', { error: 'Failed to verify security code' });
         }
     }

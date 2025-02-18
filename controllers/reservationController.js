@@ -5,14 +5,29 @@ const ReservationRepository = require('../repositories/ReservationRepository.js'
 const reservationController = {
     getReservations: async function (req, res) {
         try {
-            const { idNumber } = req.query;
-            
-            if (req.session.idNumber !== idNumber) {
-                return res.redirect('/Reservation?idNumber=' + req.session.idNumber);
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
             }
 
-            const isAdmin = await AdminRepository.findById(idNumber);
+            const { idNumber } = req.query;
+            const sessionUser = await UserRepository.findById(req.session.idNumber) || await AdminRepository.findById(req.session.idNumber);
+            
+            if (!sessionUser) {
+                req.session.destroy();
+                return res.redirect('/Login');
+            }
+
+            // If trying to view someone else's reservations
+            if (idNumber !== req.session.idNumber) {
+                const isAdmin = await AdminRepository.findById(req.session.idNumber);
+                if (!isAdmin) {
+                    return res.redirect('/Reservation?idNumber=' + req.session.idNumber);
+                }
+            }
+
             const reservations = await ReservationRepository.findUserReservations(idNumber);
+            const isAdmin = await AdminRepository.findById(idNumber);
 
             res.render('Reservation', {
                 displayUI: isAdmin ? 1 : 0,
@@ -28,14 +43,22 @@ const reservationController = {
 
     getReservationAdmin: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             const { idNumber } = req.query;
+            const sessionAdmin = await AdminRepository.findById(req.session.idNumber);
             
-            if (req.session.idNumber !== idNumber) {
-                const isAdmin = await AdminRepository.findById(req.session.idNumber);
-                if (isAdmin) {
-                    return res.redirect('/ReservationAdmin?idNumber=' + req.session.idNumber);
-                }
-                return res.render('Error', { error: 'Unauthorized access' });
+            // If not an admin, redirect to regular reservations
+            if (!sessionAdmin) {
+                return res.redirect('/Reservation?idNumber=' + req.session.idNumber);
+            }
+
+            // If trying to view another admin's page
+            if (idNumber !== req.session.idNumber) {
+                return res.redirect('/ReservationAdmin?idNumber=' + req.session.idNumber);
             }
 
             res.render('ReservationAdmin', { idNumber });
@@ -47,6 +70,11 @@ const reservationController = {
 
     postReservations: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             let idNumber;
             if (req.body.user_idNumber) {
                 const user = await UserRepository.findById(req.body.user_idNumber);
@@ -87,6 +115,11 @@ const reservationController = {
 
     postUpdateReservations: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             const currentData = {
                 startCampus: req.body.eCurrStartCampus,
                 date: req.body.eCurrDate,
@@ -129,6 +162,11 @@ const reservationController = {
 
     postDelete: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             const reservationData = {
                 startCampus: req.body.dCurrStartCampus,
                 date: req.body.dCurrDate,
@@ -148,11 +186,21 @@ const reservationController = {
     },
 
     getSearchUser: function (req, res) {
-        res.render('SearchUser');
+        // Check if user is logged in
+        if (!req.session.idNumber) {
+            return res.redirect('/Login');
+        }
+
+        res.render('Search');
     },
 
     postSearchUser: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             const { payload } = req.body;
             const searchTerm = payload.trim();
             const users = await UserRepository.searchUsers(searchTerm);
@@ -165,6 +213,11 @@ const reservationController = {
 
     postSearchUserUpdate: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             const currentData = {
                 startCampus: req.body.eCurrStartCampus,
                 date: req.body.eCurrDate,
@@ -207,6 +260,11 @@ const reservationController = {
 
     postSearchUserDelete: async function (req, res) {
         try {
+            // Check if user is logged in
+            if (!req.session.idNumber) {
+                return res.redirect('/Login');
+            }
+
             const reservationData = {
                 startCampus: req.body.dCurrStartCampus,
                 date: req.body.dCurrDate,
