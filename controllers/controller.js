@@ -13,7 +13,7 @@ const controller = {
 
         if ( req.session.idNumber ) {
 
-            const user = await UserRepository.getUserById(req.session.idNumber) ?? await UserRepository.getAdminById(req.session.idNumber);
+            const user = await UserRepository.findById(req.session.idNumber) ?? await AdminRepository.findById(req.session.idNumber);
             if (user) {
                 details = {
                     firstName: user.firstName,

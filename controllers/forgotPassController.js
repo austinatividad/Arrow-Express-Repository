@@ -1,8 +1,5 @@
-const db = require('../models/db.js');
-
-const User = require('../models/userdb.js');
-
-const Admin = require('../models/admindb.js');
+const UserRepository = require('../repositories/UserRepository.js');
+const AdminRepository = require('../repositories/AdminRepository.js');
 
 const forgotPassController = {
 
@@ -12,12 +9,8 @@ const forgotPassController = {
 
     postForgotPassword: async function (req, res){
 
-        var query = {email: req.body.user_email, securityCode: req.body.user_securityCode};
-
-        // TODO: Refactor to use a repository design pattern
-        const resultUser = await db.findOne(User, query, 'idNumber email securityCode');
-        // TODO: Refactor to use a repository design pattern
-        const resultAdmin = await db.findOne(Admin, query, 'idNumber email securityCode');
+        const resultUser = await UserRepository.findByEmailAndSecurityCode(req.body.user_email, req.body.user_securityCode);
+        const resultAdmin = await AdminRepository.findByEmailAndSecurityCode(req.body.user_email, req.body.user_securityCode);
 
         var details = {};
 
@@ -54,24 +47,16 @@ const forgotPassController = {
         var newPassword1 = req.body.user_newPassword1;
 
         if ( newPassword0 == newPassword1 ){
-
-            var query = {idNumber: req.body.idNumber};
-            const projection = { idNumber: 1, password: 1};
-
-            // TODO: Refactor to use a repository design pattern
-            const resultUser = await db.findOne(User, query, projection);
-            // TODO: Refactor to use a repository design pattern
-            const resultAdmin = await db.findOne(Admin, query, projection);
+            const resultUser = await UserRepository.findByEmailAndSecurityCode(req.body.user_email, req.body.user_securityCode);
+            const resultAdmin = await AdminRepository.findByEmailAndSecurityCode(req.body.user_email, req.body.user_securityCode);
 
             if ( resultUser != null ) {
-                // TODO: Refactor to use a repository design pattern
-                await User.updateOne(query, {password: req.body.user_newPassword1})
+                await UserRepository.updateUserPassword(req.body.idNumber, req.body.user_newPassword1)
                 console.log("Change password successful");
                 res.render('Login', { codeChange: true } );
             }
             else if ( resultAdmin != null ) {
-                // TODO: Refactor to use a repository design pattern
-                await Admin.updateOne(query, {password: req.body.user_newPassword1})
+                await AdminRepository.updateAdminPassword(req.body.idNumber, req.body.user_newPassword1)
                 console.log("Change password successful");
                 res.render('Login', { codeChange: true } );
             } else {
@@ -83,9 +68,6 @@ const forgotPassController = {
         else{
             res.render('ForgotPassword', { isMatch: false, idNumber: req.body.idNumber } );
         }
-
-        
-
     }
 }
 
