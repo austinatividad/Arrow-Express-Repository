@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Search </title>
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/FormStyle.css">  <!-- Kailangan to if may separate CSS file -->
+        <link rel="stylesheet" href="../css/ReservationStyle.css">
+		<link rel="stylesheet" href="../css/SearchStyle.css">
+    </head>
+
+    <body>
+        
+        <div class = "banner"> 
+
+            <div class="navbar">
+                <a onclick="history.back(); clear_User();"><img src="../images/Leftarrow.png" class = "back_img"></a>
+                <a href="/"> <img src= "../images/DLSU_Logo.png" class = "website_logo"> </a> 
+            </div>
+            
+            <div class="content">
+
+                <h1 style="position: relative; color: white; left: 60px; top: 40px; margin-bottom: 30px;">Search</h1>
+
+				<div style="background: rgba(100,100,100, 0.2); border-radius: 20px; width: 88%; height: 6%; margin-left: 50px; margin-top: 55px;">
+					<style>
+						input[name="search"]{
+							width: 95%;
+							background: transparent;
+							border-style: none none solid none;
+							border-bottom-color: gray;
+							font-size: 25px;
+							position: relative;
+							top: 50%;
+							transform: translateY(-50%);
+							margin-left: 15px;
+							color: white;
+							float: left;
+						}
+						
+						#searchIcon{
+							position: relative;
+							top: 23px;
+							left: 15px;
+							float: right;
+							transform: translate(110%,-50%);
+							width: 40px;
+							height: 40px;
+						}
+						
+						#searchIcon:hover{
+							cursor: pointer;
+						}
+					</style>
+					<label for="search"></label>
+					<input type="text" placeholder="View a profile..." name="search" id="search" onkeyup="sendData(this);">
+                    <img src="../images/SearchIcon.png" id="searchIcon" >
+
+					<script>
+
+						window.onload = function() {
+							sendData(document.getElementById("search"));
+						}
+
+						function sendData(e) {
+							const resultContainer = document.getElementsByClassName('results_container')[0];
+							const userCardTemplate = document.getElementsByTagName('template')[0].content;
+							
+							fetch('UserSearch', {
+								method: 'POST',
+								headers: { 'Content-Type': 'application/json' },
+								body: JSON.stringify({ payload: e.value })
+							}).then(res => res.json()).then(data => {
+								const payload = data.payload;
+								
+								resultContainer.innerHTML = "";
+
+								payload.forEach(item => {
+									const copyUserCardTemplate = document.importNode(userCardTemplate, true);
+									const nameElement = copyUserCardTemplate.querySelector('.name');
+									const designationElement = copyUserCardTemplate.querySelector('.designation');
+									const htmlAttribute = copyUserCardTemplate.querySelector(".htmlLink");
+									const imgElement = copyUserCardTemplate.querySelector("img");
+
+									nameElement.textContent = item.firstName + " " + item.lastName;
+									designationElement.textContent = item.passengerType;
+									htmlAttribute.setAttribute("href", "/SearchProfile?idNumber=" + item.idNumber);
+
+									if (item.profilePicture == null)
+										imgElement.setAttribute("src", "images/Default.png");
+									else
+										imgElement.setAttribute("src", item.profilePicture);
+									
+									resultContainer.appendChild(copyUserCardTemplate);
+								});
+							}) .catch(error => {
+								console.error('Error:', error);
+							});
+						}
+
+					</script>
+
+				</div>
+
+				<div class="container">
+					
+					<div class="results_container">
+					</div>
+
+				</div>
+                
+				<template> 
+					<div class="card">
+						<a class="htmlLink" href="#" style="text-decoration: none;">
+							<img src="../images/DLSU_Logo.png">
+							<p class="name"></p>
+							<p class="designation"></p>
+						</a> 
+					</div>
+				</template>
+
+            </div>
+
+        </div>
+    </body>
+
+</html>

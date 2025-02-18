@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Reservations </title>
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/FormStyle.css">  <!-- Kailangan to if may separate CSS file -->
+        <link rel="stylesheet" href="../css/ReservationStyle.css">
+        <script src="../js/User.js"> </script>
+        <script src="../js/Reservation.js" defer> </script>
+    </head>
+
+    <body>
+
+        <script>
+            window.onload = function() {
+				
+				{{#each result}}
+					hideScheduleForm(true, ["{{startCampus}}", "{{date}}", "{{entryLoc}}", "{{entryTime}}", "{{exitLoc}}", "{{exitTime}}", {{idNumber}}], true);
+				{{/each}}
+                
+            };
+        </script>
+        
+        <div class = "banner"> 
+
+            <div class="navbar">
+                <a onclick="history.back()"><img src="../images/Leftarrow.png" class = "back_img"></a>
+                <a href="/"> <img src= "../images/DLSU_Logo.png" class = "website_logo"> </a> 
+            </div>
+            
+            <div class="content">
+                <h1 style="position: relative; color: white; left: 50px; top: 40px;"> Reservations </h1>
+                <p style="position: relative; color: white; left: 50px; margin-top: 40px; font-style: italic;"> List of all their reservations! </p>
+                </style>
+
+                <hr style="position: relative; margin-top: 30px; border: 2px solid white;">
+
+                <div class = "schedule_container">
+                    
+                </div>
+            </div>
+        </div>
+    </body>
+
+    <style>
+
+        .reserved_schedule{
+            width: 90%;
+            height: 100px;
+            background: rgba(100,100,100, 0.2);
+            border-radius: 20px;
+            margin: auto;
+            position: relative;
+            transform: 0.5s; 
+        }
+
+        .reserved_schedule:hover{
+            transform: scale(1.02);
+        }
+
+        .text_reserved_schedule{
+            position: relative;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 20px;
+            margin-left: 20px;
+        }
+
+        .schedule_container{
+            width: 100%;
+            height: 85%;
+            position: relative;
+        }
+        
+    </style>
+</html>

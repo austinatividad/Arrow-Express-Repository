@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Home  </title> 
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/Style.css">  <!-- Kailangan to if may separate CSS file -->
+        <style> 
+            /*This removes the scrollbar for Chrome, Safari, and Opera*/
+            #staff::-webkit-scrollbar{
+                display: none;
+            }
+			
+			#schedules::-webkit-scrollbar{
+                display: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <div class = "banner" id="top"> 
+            <div class="navbar">
+                <a href="#top"> <img src= "../images/DLSU_Logo.png" class = "website_logo"> </a>
+                <p style="position: absolute; color:white; left: 165px; font-weight: bolder; font-size: 25px;"> De La Salle University </p>
+                <ul>
+                    <li><a href="/Login"> Reserve Now </a></li>
+                    <li><a href="#schedules"> Schedules </a></li>
+                    <li><a href="#staff"> Staff </a></li>
+                    <li><a href="/Search"> Search </a></li>
+                    <li><a href="/Login"> {{firstName}} </a></li>
+                </ul>
+            </div>
+
+            <div class = "content" id = "content" style="background-color: rgba(0, 0, 0, 0.63); border-radius:30px; left: 50%; transform: translate(-50%, -50%); padding-top: 20px; padding-bottom: 20px; width: 75%; z-index: 0;">
+                <h3> Welcome to </h3>
+                <h1> Arrow Express </h1>
+                <p> Simplify your shuttle booking and secure your seat effortlessly with our user-friendly platform. <br> 
+                    Experience the convenience of booking shuttles with just a few clicks and enjoy a stress-free journey to your destination. </p>
+                <div>
+                    <button type="button" onclick="window.location.href='/SignUp'"> <span></span> Get Started </button>
+                    <a href="#about"> <button type="button"> <span></span> About Us </button> </a>  <!-- onclick is to open a new html file within the window -->
+                </div>
+            </div>
+        </div>
+
+        <div id="about" style="display:flex; gap: 10px; flex-direction: column;">
+            <div class="content-about" style="height: 400px; top: 33%;">
+                <h3>About Us</h3>
+                <p>We are proud to present our CCAPDEV Project, designed by Mauries, Benmar, and Nathan. Our project aims to improve the existing scheduling system for the Arrows Express Shuttle, introducing innovative features and a user-friendly profile system for ease-of-access.</p>
+                <p>With our collective expertise and passion for creating efficient solutions, we have developed a platform that enhances the shuttle-commuting experience of students, faculty, and staff at De La Salle University. Our project incorporates the concept of a profile system, allowing users to easily manage their reservations and personalize their shuttle experience.</p>
+                <p>We are dedicated to providing reliable and convenient ways to access shuttle services that align with the hard work and dedication of the DLSU community. By simplifying the scheduling process and introducing user-friendly features, we aim to ensure a comfortable and stress-free journey for all passengers.</p>
+                <p>A simplified booking experience for Arrows Express, designed by Mauries, Benmar, and Nathan, is a testament to our commitment to innovation and our drive to serve the needs of the DLSU community. Join us in experiencing a new level of convenience and efficiency in school transportation.</p>
+            </div>
+            <div class="content-about" style="width: 250px; height: 300px; top: 30%;">
+                <h3>Dependencies</h3>
+                <p> "bcrypt": "^5.1.0", </p>
+                <p> "connect-mongo": "^3.2.0", </p>
+                <p> "express": "^4.18.2", </p>
+                <p> "express-session": "^1.17.3", </p>
+                <p> "express-validator": "^7.0.1", </p>
+                <p> "hbs": "^4.2.0", </p>
+                <p> "mongodb": "^3.5.5", </p>
+                <p> "mongoose": "^7.3.4", </p>
+                <p> "multer": "^1.4.5-lts.1" </p>
+            </div>
+        </div>
+
+        <div class="arrows" id="schedules" style="overflow: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+            <div class="schedule-container">
+              <div class="toprow">
+                <div class="tc">
+                  <h3>Line 1 (MON-SAT)</h3>
+                  <div class="s-title">Manila to Laguna</div>
+                  <table id="sc-table1" class="sc-table"></table>
+                </div>
+                <div class="tc">
+                  <h3>&nbsp;</h3>
+                  <div class="s-title">Laguna to Manila</div>
+                  <table id="sc-table2" class="sc-table2"></table>
+                </div>
+              </div>
+              <div class="midrow">
+                <div class="tc">
+                  <h3>LINE 2 (MON-FRI)</h3>
+                  <div class="s-title">DLSU Laguna - Laguna Central</div>
+                  <table id="sc-table3" class="sc-table3">
+                  </table>
+                </div>
+                <div class="tc">
+                  <h3>LINE 3</h3>
+                  <div class="s-title">DLSU Laguna - Pavilion</div>
+                  <table id="sc-table4" class="sc-table4">
+                  </table>
+                </div>
+                <div class="tc">
+                  <h3>Line 4</h3>
+                  <div class="s-title">DLSU Laguna - Carmona</div>
+                  <table id="sc-table5" class="sc-table5">
+                  </table>
+                </div>
+                <div class="tc">
+                  <h3>Line 5</h3>
+                  <div class="s-title">DLSU Laguna - Waltermart</div>
+                  <table id="sc-table6" class="sc-table6">
+                  </table>
+                </div>
+              </div>
+              <div class="botrow">
+                <div class="tc">
+                  <h3>Line 2 (SAT)</h3>
+                  <div class="s-title">DLSU Laguna - Paseo</div>
+                  <table id="sc-table7" class="sc-table7">
+                  </table>
+                </div>
+                <div class="tc">
+                  <h3>Line 4</h3>
+                  <div class="s-title">DLSU Laguna - Carmona</div>
+                  <table id="sc-table8" class="sc-table8">
+                  </table>
+                </div>
+                <div class="tc">
+                  <h3>Line 5</h3>
+                  <div class="s-title">DLSU Laguna - Waltermart</div>
+                  <table id="sc-table9" class="sc-table9">
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div> 
+
+          <script src="../js/ScheduleArrayIndex.js"></script>      
+
+        <div id="staff" style="display: flex; flex-wrap: wrap; justify-content: center; overflow: scroll; -ms-overflow-style: none; scrollbar-width: none;">
+            <style>
+                #staff .unit{
+                    display: flex;
+                    flex-wrap: wrap;
+                    flex-direction: vertical;
+                    background-color: white;
+                    border-style: solid;
+                    border-color: gray;
+                    border-radius: 8px;
+                    border-width: 3px;
+                    margin: 35px;
+                    width: 280px;
+                    height: auto;
+                    max-height: 400px;
+                    box-shadow: 4px 4px lightgreen; 
+                    flex-grow: 1;
+                    min-width: 280px;
+                    max-width: 280px;
+                }
+                #staff .unit name{
+                    font-size: 24px;
+                    font-weight: 500;
+                    text-align:center;
+                    margin: 10px auto 10px auto;
+                    padding: 0px 10px 0px 10px;
+                }
+                #staff .unit photo{
+                    margin: 0px auto 0px auto;
+                    width: 240px;
+                    height: 240px;
+                    border: 3px solid gray;
+                    border-radius: 8px;
+                }
+                #staff .unit photo img{
+					width: 100%;
+					height: 100%;
+                    max-width: 100%;
+                    max-height: 100%;
+                }
+                #staff .unit description{
+                    text-align: center;
+                    margin: 10px auto 10px auto; 
+                    padding: 0px 10px 0px 10px;
+                }
+            </style>
+
+            <div class="unit">
+                <name>
+                    John Magsaysay
+                </name>
+                <photo>
+                    <img src="../images/staff1.png" title="https://ent.abs-cbn.com/starmagic/articles-photos/58052617-46-off-cam-photos-of-piolo-pascual-that-proved-hes-human-too-star-magic-12861">
+                </photo>
+                <description>
+                    Driver - Paseo <br>
+                    <a href="mailto: john_email@_email_?subject = Reservation Concerns&amp;body = Message"> john.magsaysay@gmail.com</a>
+                </description>
+            </div>
+
+            <div class="unit">
+                <name>
+                    May Flores
+                </name>
+                <photo> 
+					<img src="../images/staff2.png" title="https://play.nintendo.com/themes/friends/isabelle/"> 
+				</photo>
+                <description> Driver - Carmona <br> may.flores@gmail.com </description>
+            </div>
+            
+            <div class="unit">
+                <name>
+                    Juan Dela Cruz
+                </name>
+                <photo> 
+					<img src="../images/staff3.png" title="https://www.filipinojapanesejournal.com/coco-martin-is-filipino-japanese-journals-march-2023-cover-star/">
+				</photo>
+                <description> Driver - Pavilion <br> juan.cruz@gmail.com </description>
+            </div>
+            <div class="unit">
+                <name>
+                    Flynn Driver
+                </name>
+                <photo> 
+					<img src="../images/staff4.png" title="Disney's Tangled - Flynn Rider">
+				</photo>
+                <description> Driver - Walter Mart  <br> flynn.driver@gmail.com </description>
+            </div>
+            <div class="unit">
+                <name>
+                    Gil Puyat
+                </name>
+                <photo> 
+					<img src="../images/staff5.png" title="https://foursquare.com/v/lrt1--gil-puyat-station/4c10750aa6c19521885036dd?tipsPage=2">
+				</photo>
+                <description> Driver - Manila <br> gil.puyat.avenue@gmail.com </description>
+            </div>
+            <div class="unit">
+                <name>
+                    Sarah Do
+                </name>
+                <photo> 
+					<img src="../images/staff6.png" title="https://heroes-and-villain.fandom.com/wiki/Scooby-Doo?file=Scooby_Doo.webp">
+				</photo>
+                <description> Site Administrator <br> sarah.do@gmail.com </description>
+            </div>
+            <div class="unit">
+                <name>
+                    Mauries Lopez
+                </name>
+                <photo> 
+					<img src="../images/staff7.png">
+				</photo>
+                <description> Web Developer <br> mauries_lopez@dlsu.edu.ph </description>
+            </div>
+            <div class="unit">
+                <name>
+                    Benmar Ramirez
+                </name>
+                <photo> 
+					<img src="../images/staff8.png"> 
+				</photo>
+                <description> Web Developer <br> sim_ramirez@dlsu.edu.ph </description>
+            </div>
+            <div class="unit">
+                <name>
+                    Nathan Asnan
+                </name>
+                <photo> 
+					<img src="../images/staff9.png">
+				</photo>
+                <description> Web Developer <br> nathan_andrei_asnan@email.com </description>
+            </div>
+        </div>
+
+        <div class = "footer">
+            <div class = "footer_contents">
+                <a href="#staff"> Group Members </a> <br>
+                <a href="#about"> About the Website </a>
+            </div>
+        </div>
+        
+    </body>
+</html>

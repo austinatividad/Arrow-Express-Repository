@@ -1,0 +1,341 @@
+<DOCTYPE! html>
+<html>
+    <head>
+        <title> Arrow Express - Settings </title> 
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" type="text/css" href="../css/SettingsStyle.css">
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script type="text/javascript">
+            var buttons = document.getElementsByClassName("tab");
+            var panels = document.getElementsByClassName("panel");
+			
+            function showPanel(i){
+                //This just resets all the backgound colour and text colour for all buttons
+				for(const button of buttons){
+					button.style.backgroundColor="";
+					button.style.color="";
+				}
+
+                //Differentiates the colour of the active button
+                buttons[i].style.backgroundColor="white";
+                buttons[i].style.color="black";
+                
+                //Resets display for all panels
+				for(const panel of panels){
+					panel.style.display="none";
+				}
+
+                //displays the chosen panel
+                panels[i].style.display="block";
+            }
+			
+			//check if redirected from settings and got an error
+			window.onload = function() {
+      
+				document.getElementById("error_box").style.display = "none";
+
+				var infoChangeSuccess = new URLSearchParams(window.location.search).get('infoChangeSuccess');
+				var pwChangeSuccess = new URLSearchParams(window.location.search).get('pwChangeSuccess');
+				var codeChangeSuccess = new URLSearchParams(window.location.search).get('codeChangeSuccess');
+				var deleteSuccess = new URLSearchParams(window.location.search).get('deleteSuccess');
+				
+				if (infoChangeSuccess != null && infoChangeSuccess == "false"){
+					document.getElementById("error_box").style.display = "block";
+					$("#error_message").text("Info couldn't be changed. Please try again.");
+					
+					setTimeout(function(){
+						document.getElementById("error_box").style.display = "none";
+					}, 3000);
+				}
+
+				if(pwChangeSuccess != null && pwChangeSuccess=="false"){
+					document.getElementById("error_box").style.display = "block";
+					$("#error_message").text("Current password was wrong. Please try again.");
+					
+					setTimeout(function(){
+						document.getElementById("error_box").style.display = "none";
+					}, 3000);
+				}
+				
+				if(codeChangeSuccess != null && codeChangeSuccess=="false"){
+        
+					document.getElementById("error_box").style.display = "block";
+					$("#error_message").text("Current Security Code was wrong. Please try again.");
+					
+					setTimeout(function(){
+						document.getElementById("error_box").style.display = "none";
+					}, 3000);
+				}
+
+				if(deleteSuccess != null && deleteSuccess=="false"){
+
+					document.getElementById("error_box").style.display = "block";
+					$("#error_message").text("Current password was wrong. Please try again.");
+					
+					setTimeout(function(){
+						document.getElementById("error_box").style.display = "none";
+					}, 3000);
+				}
+
+				var adminLink = '/ProfileAdmin?idNumber=' + {{idNumber}};
+                var userLink = '/Profile?idNumber=' + {{idNumber}};
+
+                if ( {{isAdmin}} == true ){
+                    document.getElementById('backButton').setAttribute('href', adminLink);
+                }
+                else{
+                    document.getElementById('backButton').setAttribute('href', userLink);
+                }
+				
+			};
+        </script>
+    
+        <style>
+            .panel{
+                float: left;
+                display: none;
+				overflow: scroll;
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+				padding: 4.5%;
+				width: 100%;
+            }
+			.panel::-webkit-scrollbar{
+				display: none;
+			}
+			.panel div div{
+				padding: 20px 0 20px 0;
+			}
+			
+			.panel div div input[type="text"]{
+				height: 50px; 
+				margin-top: 10px; 
+				font-size: 24px; 
+				border-radius: 5px; 
+				padding-left: 5px;
+			}
+			
+			.panel div div input[type="password"]{
+				height: 50px; 
+				margin-top: 10px; 
+				font-size: 24px; 
+				border-radius: 5px; 
+				padding-left: 5px;
+			}
+			
+			.submitButton{
+				color: white;
+				background-color: rgb(0, 139, 50, 1);
+				border: 3px solid black;
+				border-radius: 10px;
+				padding: 0 10px 0 10px;
+				width: 200px;
+				height: 50px;
+				font-size: 20px;
+			}
+			
+			.submitButton:hover{
+				background-color: rgba(0, 139, 50, 0.9);
+				cursor: pointer;
+			}
+			
+        </style>
+    </head>
+
+    <body>
+		
+        <div class="navbar">
+            <a href="" id="backButton"><img src="../images/Leftarrow.png" class="back_img"></a>
+            <img src= "../images/DLSU_Logo.png" class = "website_logo">
+
+            <style>
+                img:hover{
+                    cursor: default;
+                }
+            </style>   
+        </div>
+
+        <div class="content">
+
+            <div id="tab_container">   
+                <h1 style="position: relative; margin-left: 30px; margin-top: 30px; color: white; "> Profile Settings </h1>
+                <hr style="position: relative; margin-top: 25px; border: 2px solid white;">
+                
+                <div id="tab_list">
+                    <button onclick="showPanel(0)" class="tab"> Profile </button>
+                    <button onclick="showPanel(1)" class="tab"> Password </button>
+                    <button onclick="showPanel(2)" class="tab"> Delete Account </button>
+                </div>
+
+            </div>
+
+            <div id="tab_content"> 
+
+                <div class="panel" id="profile_tab" style="display: flex; flex-direction: vertical;">
+                    <!-- First Name, Last Name, Student Number, Designation, Type of Passenger -->
+                    <div style="background-color: white; border-radius: 25px; width:auto; padding: 25px;">
+						<h1>Public info</h1>
+						<hr>
+						<form id="public_change" action="/ChangePublicInfo" method="post" enctype="multipart/form-data">
+							<input type="hidden" name="idNumber" value="{{idNumber}}">
+							<div style="display: flex;">
+								<div style="margin-right: 20px;">
+									<label for="currentFirstName"><h2>Current First Name:</h2></label>
+									<input type="text" placeholder="{{firstName}}" id="currentFirstName" name="currentFirstName" readonly disabled>
+								</div>
+								<div>
+									<label for="currentLastName"><h2>Current Last Name:</h2></label>
+									<input type="text" placeholder="{{lastName}}" id="currentLastName" name="currentLastName" readonly disabled>
+								</div>
+							</div>
+							<div style="display: flex;">
+								<div style="margin-right: 20px;">
+									<label for="newFirstName"><h2>New First Name:</h2></label>
+									<input type="text" placeholder="Enter First Name" id="newFirstName" name="newFirstName">
+								</div>
+								<div>
+									<label for="newLastName"><h2>New Last Name:</h2></label>
+									<input type="text" placeholder="Enter Last Name" id="newLastName" name="newLastName">
+								</div>
+							</div>
+							<div>
+								<label for="dp"><h2>Display Photo: <br> <h2></label>
+								<input type="file" id="dp" name="dp" style="margin-top: 10px;" accept="image/png">
+							</div>
+							
+							<button type="submit" class="submitButton">Save Changes</button>
+						</form>
+					</div>
+
+					<script>/*This shows Profile tab automatically at page load*/showPanel(0);</script>
+					
+					<div style="background-color: white; border-radius: 25px; width:auto; padding: 25px; margin-top: 15px">
+						<h1>Private info</h1>
+						<hr>
+						<form id="private_change", action="/ChangePrivateInfo" method="post">
+							<input type="hidden" name="idNumber" value="{{idNumber}}">
+							<div style="display: flex;">
+								<div style="margin-right: 20px;">
+									<label for="oldDesignation"><h2>Current Designation: </h2></label>
+									<input type="text" placeholder="{{designation}}" id="oldDesignation" name="oldDesignation" readonly disabled>
+								</div>
+								<div>
+									<label for="newDesignation"><h2>New Designation: <br> <h2></label>
+									<select id="newDesignation" name="newDesignation" style="height: 50px; margin-top: 10px; font-size: 24px; border-radius: 5px; width: 300px">
+										<option value="Guest">Guest</option>
+										<option value="Student">Student</option>
+										<option value="Faculty">Faculty</option>
+										<option value="ASP">ASP</option>
+										<option value="APSP">APSP</option>
+										<option value="CAF">CAF</option>
+										<option value="ESP">ESP</option>
+									</select>
+								</div>
+							</div>
+							
+							<div style="display:flex;" id="changePassengerType">
+								<div style="margin-right: 20px;">
+									<label for="oldPassengerType"><h2>Current Passenger Type: </h2></label>
+									<input type="text" placeholder="{{passengerType}}" id="oldPassengerType" name="oldPassengerType" readonly disabled>
+								</div>
+							</div>
+							
+							<button onclick="submitForm('private_change')", class="submitButton">Save Changes</button>
+						</form>
+					</div>
+					
+                </div>
+
+                <div class="panel" id="password_tab">
+                    <div style="background-color: white; border-radius: 25px; width:auto; padding: 25px;">
+						<h1>Password Change</h1>
+						<hr>
+						<form id="pass_change" action="/ChangePassword" method="post">
+							<input type="hidden" name="idNumber" value="{{idNumber}}">
+							<div>
+								<label for="currentPassword"><h2>Current Password: <br> <h2></label>
+								<input type="password" placeholder="Current Password" id="currentPassword" name="currentPassword">
+							</div>
+							<div>
+								<label for="newPassword"><h2>New Password: <br> <h2></label>
+								<input type="password" placeholder="New Password" id="newPassword" name="newPassword">
+							</div>
+							
+							<button type="submit" class="submitButton">Save Password</button>
+						</form>
+					</div>
+
+					<div style="background-color: white; border-radius: 25px; width:auto; padding: 25px; margin-top: 20px;">
+						<h1>Two Authentication</h1>
+						<hr>
+						<form id="pass_change" action="/ChangeCode" method="post">
+							<input type="hidden" name="idNumber" value="{{idNumber}}">
+							<div>
+								<label for="currentSecCode"><h2>Current Security Code: <br> <h2></label>
+								<input type="password" placeholder="4-Digit Security Code" id="currentSecCode" name="currentSecCode" pattern="[0-9]+" minlength="4" maxlength="4" >
+							</div>
+							<div>
+								<label for="newSecCode"><h2>New Security Code: <br> <h2></label>
+								<input type="password" placeholder="4-Digit Security Code" id="newSecCode" name="newSecCode" pattern="[0-9]+" minlength="4" maxlength="4" >
+							</div>
+							
+							<button type="submit" class="submitButton">Save Changes</button>
+						</form>
+					</div>
+                    <!-- Current Password, New Password, Verify Password -->
+                </div>
+
+                <div class="panel" id="delete_tab"> 
+                    <div style="background-color: white; border-radius: 25px; width:auto; padding: 25px;">
+						<h1>Delete Account</h1>
+						<hr><br>
+						You must input your password in order to confirm the deletion of your account.
+						<form id="delete_account" action="/DeleteAccount" method="post">
+							<div>
+								<label for="password"><h2>Current Password: <br> <h2></label>
+								<input type="password" placeholder="Password" id="password" name="Password">
+								<input type="hidden" name="idNumber" value="{{idNumber}}">
+							</div>
+							
+							<button type="submit" class="submitButton" style="width: auto; ">Delete Account</button>
+						</form>
+					</div>
+                    <!-- Type current password, delete buttom -->
+                </div>
+
+            
+            </div>
+
+        </div>
+		
+		<div id="error_box" style="display: none;">
+            <p id="error_message"></p>
+        </div>
+		
+		<style>
+			#error_box{
+				width: 380px;
+				height: 20px;
+				top: 10%;
+				left: 50%;
+				margin: auto;
+				background: rgb(255, 54, 54);
+				padding: 5px;
+				position: absolute;
+				border-radius: 20px;
+				display: none;
+				transform: translate(-50%,-50%);
+			}
+
+			#error_box p{
+				text-align: center;
+				font-family: sans-serif;
+				font-size: 13px;
+				position: relative;
+				top: 3px;
+			}
+		</style>
+
+		
+	</body>
+</html>

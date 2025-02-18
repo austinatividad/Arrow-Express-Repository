@@ -1,0 +1,104 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+body{
+    margin: 0px;
+    background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0, 0, 0, 0.5)),url(../images/DLSU_Background0.png);
+    background-size: cover;
+    background-position: cover;
+}
+
+.website_logo{
+    width: 80px;
+    cursor: pointer;
+}
+
+
+.navbar{
+    width: 85%;
+    margin: auto;
+    padding: 35px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.content{
+    position: relative;
+    width: 1350px;
+    height: 800px;
+    margin: auto;
+    top: -15px;
+    background: rgba(0, 0, 0, 0.623);
+    display: flex;
+    border-radius: 50px;
+}
+
+
+.content #info_box{
+    justify-content: center;
+    position: relative;
+    width: 550px;
+    height: 720px;
+    background:rgb(0, 172, 43);
+    background-image: linear-gradient(rgba(0, 0, 0,0),rgba(0, 0, 0, 0.8));
+    background-position-x: -360px;
+    border-radius: 50px;
+    margin-left: 40px;
+    margin-top: 40px;
+}
+        
+#profile_picture{
+    position: relative;
+    object-fit: cover;
+    width: 300px;
+    height: 300px;
+    border-radius: 50%;
+    margin-top: 90px;
+    margin-left: 110px;
+    border: 10px solid white;
+}
+
+
+.content .right{
+    top: 10px;
+    left: 30px;
+    position: relative;
+    width: 800px;
+    height: 800px;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.content .right .box{
+    position: relative;
+    width: 310px;
+    height: 320px;
+    background: white;
+    margin: 30px;
+    border-radius: 30px;
+    transition: 0.5s;
+}
+
+.content .right .box:hover{
+    cursor: pointer;
+    background:rgb(0, 119, 30);
+}
+
+.content .right .logout_box{
+    position: relative;
+    width: 310px;
+    height: 320px;
+    background: white;
+    margin: 30px;
+    border-radius: 30px;
+    transition: 0.5s;
+}
+
+.content .right .logout_box:hover{
+    cursor: pointer;
+    background:rgb(255, 54, 54);
+}

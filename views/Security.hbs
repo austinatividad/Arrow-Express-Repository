@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Security </title> 
+        <script src="../js/User.js"> </script>
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/FormStyle.css">  <!-- Kailangan to if may separate CSS file -->
+    </head>
+
+    <body>
+
+        <script>
+            
+            window.onload = function() {
+                
+            };
+
+        </script>
+
+        <div class = "banner"> 
+            <div class="navbar">
+                <a href="/"><img src="../images/Leftarrow.png" class = "back_img"></a>
+                <a href="/"> <img src= "../images/DLSU_Logo.png" class = "website_logo"> </a>
+            </div>
+            
+            <div class="form_box">
+                <h2> Security Check </h2>
+                <h4> 4-Digit Security Code </h4>
+                <hr>
+                <div class="input">
+                    <form action="/SecurityCheck" id="loginForm" method="post">
+                        <input type="hidden" name="idNumber" value="{{idNumber}}">
+                        <label for="user_securityCode"></label>
+                        <input type="password" placeholder="Enter 4-Digit Security Code" class="fillup" name="user_securityCode" id="user_securityCode" required pattern="[0-9]+" minlength="4" maxlength="4" >
+                        <button type="submit" class="toggle_btn" > Submit <style> .toggle_btn{ font-size: large; font-weight: bold;} </style> </button>
+                    </form>
+                </div>
+
+            </div>
+
+            <div id="error_box">
+                <p> Invalid User/Password. Check your input </p>
+            </div>
+
+        </div>
+    </body>
+
+    <style>
+
+        .form_box{
+            height: 230px;
+            margin: 100px auto;
+        }
+
+        .form_box .input{
+            top: 25px;
+        }
+
+        .toggle_btn{
+            top: -10px;
+        }
+
+        .subtext{
+            top: 30px;
+        }
+
+        #error_box{
+            width: 380px;
+            height: 20px;
+            top: 12%;
+            margin: auto;
+            background: rgb(255, 54, 54);
+            padding: 5px;
+            position: relative;
+            border-radius: 20px;
+            display: none;
+        }
+
+        #error_box p{
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 13px;
+            position: relative;
+            top: 3px;
+        }
+
+    </style>
+
+</html>

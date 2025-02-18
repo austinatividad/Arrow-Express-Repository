@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title> Arrow Express - {{firstName}} {{lastName}} Profile </title> 
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" type="text/css" href="../css/ProfileStyle.css">
+    </head>
+
+    <body>
+        <div class="navbar">
+            <a href="/"> <img src= "../images/DLSU_Logo.png" class = "website_logo"> </a>  
+        </div>
+        <div class="content">
+
+            <div id="info_box">
+                <img src = "{{profilePicture}}" id = "profile_picture">
+                <p class = "title_text" style="top: 50px; text-align: center; font-size: 40px; color: white;"> {{firstName}} {{lastName}} </p>
+                <p class = "sub_text" style="top: 50px; text-align: center; font-size: 25px; color: white; font-style: normal;"> {{idNumber}} </p>
+                <p class = "sub_text" style="top: 80px; text-align: center; font-size: 20px; color: white;"> {{passengerType}} </p>
+            </div>
+            
+            <div class="right"> 
+
+                <a href="/SearchReservation?idNumber={{idNumber}}">
+                    <div class="box">
+                        <img src = "../images/ViewReservation.png" class = "logo">
+                        <p class = "title_text" style="top: 50px; text-align: center;" > Reservations </p>
+                        <p class = "sub_text" style="top: 50px; text-align: center;"> View their Shuttle Reservations </p>
+                    </div>
+                </a>
+        
+                <a onclick="history.back()">
+                    <div class="logout_box">
+                        <img src = "../images/Back2Search.png" class = "logo">
+                        <p class = "title_text" style="top: 50px; text-align: center;" > Back to Search </p>
+                        <p class = "sub_text" style="top: 50px; text-align: center;"> Continue Searching </p>
+                    </div>
+                </a>
+
+            </div>  
+
+        </div>
+
+    </body>
+
+    <style>
+
+        a{
+            text-decoration: none;
+        }
+
+        #van_logo{
+            width: 200px;
+            height: 200px;
+            margin: auto;
+            display: block;
+        }
+
+        .logo{
+            position: relative;
+            top: 60px;
+            width: 130px;
+            height: 130px;
+            margin: auto;
+            display: block;
+        }
+
+        .title_text{
+            position: relative;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: black;
+            margin-top: 30px;
+        }
+
+        .sub_text{
+            position: relative;
+            font-style: italic;
+            text-decoration: none;
+            color: black;
+        }
+
+        
+    </style>
+
+</html>

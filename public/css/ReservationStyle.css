@@ -1,0 +1,284 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.input{
+    top: 20px;
+}
+
+.banner{
+    background-image: linear-gradient(rgba(0,0,0,0.5),rgba(0, 0, 0, 0.5)),url(../images/DLSU_Background0.png);
+}
+
+.adminUser{
+    /*display: inline;*/
+    display: none;
+}
+
+.form_box {
+    display: none;
+    position: fixed;
+    background: rgb(51, 255, 0);
+    height: 390px;
+    top: 50%;
+    left: 50%;
+    margin-top: -13em;
+    margin-left: -12em;
+    position: fixed;
+}
+
+.form_box #blur_box{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 977px;
+    background-image: linear-gradient(rgba(0,0,0,0.8),rgba(0, 0, 0, 0.8));
+    background-size: cover;
+    background-position: cover;
+}
+
+.form_box2 {
+    display: none;
+    position: fixed;
+    background: rgb(51, 255, 0);
+    height: 390px;
+    top: 300px;
+    right: 770px;
+    width: 380px;
+    border-radius: 20px;
+    padding: 5px;
+    top: 50%;
+    left: 50%;
+    margin-top: -13em;
+    margin-left: -12em;
+    position: fixed;
+}
+
+.form_box2 #blur_box{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 977px;
+    background-image: linear-gradient(rgba(0,0,0,0.8),rgba(0, 0, 0, 0.8));
+    background-size: cover;
+    background-position: cover;
+}
+
+.form_box2 h2,h4{
+    position: relative;
+    width: 200px;
+    margin-left: 30px;
+    top: 15px;
+    color: white;
+}
+
+.form_box2 hr {
+    position: relative;
+    width: 100%;
+    top: 30px;
+}
+
+.form_box2 .input {
+    position: relative;
+    margin-top: 8%;
+}
+
+.form_box2 .input .fillup {
+    width: 300px;
+    display: flex;
+    margin: auto;
+    border-radius: 8px;
+    border: none;
+    padding: 10px;
+    text-align: center;
+    margin: 10px auto;
+}
+
+.toggle_btn{
+    top: -50px;
+}
+
+.subtext a{
+    position: relative;
+    top: -35px;
+}
+
+.content{
+    position: relative;
+    width: 1350px;
+    height: 800px;
+    margin: auto;
+    top: -15px;
+    border-radius: 50px;
+    background: rgba(0, 0, 0, 0.603);
+}
+
+.content .schedule_container{
+    margin: auto;
+    position: relative;
+    height: 77%;
+    margin-top: 15px;
+}
+
+        					
+.content .schedule_container{
+    overflow-y: scroll;
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.content .schedule_container::-webkit-scrollbar{
+    display: none;
+}
+
+.content .schedule_container .reserved_schedule{
+    display: flex;
+    align-items: end;
+    justify-content: center;
+    flex-direction: column;
+    position: relative;
+    margin: 20px auto;
+    top: -15px;
+    border: 5px solid white;
+    width: 95%;
+    height: 7%;
+    background: green;
+    border-radius: 30px;
+    transition: 0.5s;
+}
+
+.content .schedule_container .reserved_schedule .text_reserved_schedule{
+    position: absolute;
+    width: 80%;
+    height: 50px;
+    justify-content: center;
+    left: 0px;
+    margin-left: 20px;
+    display: flex; 
+    justify-content: start;
+}
+
+.text_reserved_schedule hr{
+    border: 2px solid white; 
+    border-radius: 30px;
+}
+
+.text_reserved_schedule p{
+    line-height: 50px;
+    margin-left: 20px;
+    margin-right: 20px;
+    color: white;
+    font-weight: bold;
+    font-size: 13px;
+}
+
+
+.reserved_schedule .reserved_schedule_btn{
+    display: flex;
+    position: relative;
+    border-radius: 25px;
+    width: 200px;
+    height: 40px;
+    background: transparent;
+    margin-right: 15px;
+}
+.reserved_schedule .reserved_schedule_btn button{
+    cursor: pointer;
+    position: relative;
+    width: 100%;
+    border-radius: 25px;    
+    border: 2px solid white;
+    font-weight: bold;
+    margin: 3px;
+    transition: 0.2s;
+}
+
+.reserved_schedule .reserved_schedule_btn .edit_btn{
+    background: rgb(255, 255, 112);
+}
+
+.reserved_schedule .reserved_schedule_btn .delete_btn{
+    background: rgb(255, 109, 109);
+}
+
+.reserved_schedule .reserved_schedule_btn button:hover{
+    width: 150%;
+}
+
+.button_box{
+    width: 320px;
+    margin: 35px auto;
+    position: relative;
+    background: #fff;
+    border-radius: 30px;
+}
+
+.button_box button{
+    padding: 10px 55px;
+    position: relative;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    font-weight: bold;
+    color: black;
+}
+
+#btn{
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 160px;
+    height: 100%;
+    background: rgb(0, 119, 30);
+    border-radius: 30px;
+    margin: 0px;
+    transition: 0.7s;
+}
+
+#ebtn{
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 160px;
+    height: 100%;
+    background: rgb(0, 119, 30);
+    border-radius: 30px;
+    margin: 0px;
+    transition: 0.7s;
+}
+
+#user_date{
+    position: relative;
+    top: -25px;
+}
+
+
+.calendar{
+    background: rgba(255, 0, 0, 0);
+    width: 300px;
+    height: 300px;
+    position: relative;
+}
+
+.entry{
+    position: relative; 
+    display: flex; 
+    width: 330px; 
+    margin-left: 20px; 
+    top: -35px;
+}
+
+.exit{
+    position: relative; 
+    display: flex;
+    width: 330px; 
+    margin-left: 20px; 
+    top: -45px;
+}
+
+

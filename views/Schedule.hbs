@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Schedule </title>
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/FormStyle.css"> 
+        <link rel="stylesheet" href="../css/ReservationStyle.css">
+        <script src="../js/User.js"> </script>
+        <script src="../js/Schedule.js"> </script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            window.onload = function() {
+                leftClick();
+            };
+        </script>
+    </head>
+
+    <body>
+        
+        <div class = "banner"> 
+
+            <div class="navbar">
+                <a onclick="history.back()"><img src="../images/Leftarrow.png" class = "back_img"></a>
+
+                <div id="error_box">
+                    <p id="error_message"> </p>
+                </div>
+                
+                <img src= "../images/DLSU_Logo.png" class = "website_logo">
+
+                <style>
+                    img:hover{
+                        cursor: default;
+                    }
+                </style>    
+            
+            </div>
+            
+            <div class="content">
+
+                <h1 style="position: relative; color: white; left: 50px; top: 40px;"> Schedule </h1>
+                <p style="position: relative; color: white; left: 50px; margin-top: 40px; font-style: italic;"> View seats availability of a schedule </p>
+                <button id="view_schedule_btn" onclick="showScheduleForm();"> View Schedule </button> 
+                <style> 
+                    #view_schedule_btn{
+                        position: absolute; 
+                        left: 85%; 
+                        top: 5%; 
+                        padding: 15px; 
+                        font-weight: bold; 
+                        background: transparent;
+                        border: 5px solid green;
+                        color: white;
+                        cursor: pointer; 
+                        border-radius: 30px; 
+                        transition: 0.5s;
+                    }
+
+                    #view_schedule_btn:hover{
+                        background: green;
+                        color: black;
+                    } 
+
+                </style>
+
+                <hr style="position: relative; margin-top: 30px; border: 2px solid white;">
+
+                <div class = "schedule_container">
+                    <div class="viewed_schedule">
+                        <h2 id="schedule_label">Seats Availability of Schedule</h2>
+                        <div id="seat_container">
+                        </div>
+                      </div>
+                </div>
+                
+                <div class="form_box">
+                    <div id="blur_box"> </div>
+                    <h2> View Schedule </h2>
+                    <h4> Seat availability </h4>
+                    <hr>
+                    <div class="input">
+                        <form onsubmit="return findMatchingSeats(event);" novalidate>
+                            <div class="button_box">
+                                <div id="btn"></div>
+                                <button type="button" class="switch" id="entry_btn" onclick="leftClick();" style="text-align: center; left: 10px;" onchange="changeTimeSlots();"> Entry </button>
+                                <button type="button" class="switch" id="exit_btn" onclick="rightClick();" style="right: -30px;" onchange="changeTimeSlots();"> Exit </button> 
+                            </div>
+    
+                            <input type="date" placeholder="Date" class="fillup" required name="user_date" id="user_date">
+    
+                            <div class="location">
+                                <img src="../images/Help.png" style="width: 25px; height: 25px; position: relative; filter:invert(1); top: 15px; left:10px; cursor: help;" title="Select a designated location">
+                                <select required name="user_location" id="user_location" class="fillup" style="width: 190px; margin: 10px; position: relative; left: 5px; " onchange="changeTimeSlots();">
+                                    <option value="" disabled selected hidden s> Select Location </option>
+                                </select>
+                                <select required name="user_entryTime" id="user_entryTime" class="fillup" style="width: 120px; ">
+                                    <option value="" disabled selected hidden s> Time Slot </option>
+                                </select>
+                            </div>
+
+                            <button type="submit" class="toggle_btn" id="reserve_btn" onclick="hideScheduleForm();"> View Schedule <style> .toggle_btn{ font-size: large; font-weight: bold;}</style></button>
+                        </form>
+                        
+                    </div>
+    
+                    <div class="subtext">
+                        <a onclick="cancelScheduleForm();" style="cursor:pointer;">Cancel </a>
+                    </div>
+    
+                </div>
+
+                
+
+            </div>
+
+        </div>
+    </body>
+
+    <style>
+
+        .location{
+            position: relative; 
+            display: flex; 
+            width: 330px; 
+            margin-left: 20px; 
+            top: -35px;
+        }
+
+        .form_box{
+            height: 330px;
+        }
+
+        .content .schedule_container .viewed_schedule {
+            display: flex;
+            flex-direction: row;
+            position: relative;
+            margin: 20px auto;
+            top: 20px;
+            border: 5px solid white;
+            width: 90%;
+            height: 90%;
+            background: green;
+            border-radius: 50px;
+        }
+
+        .schedule_container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 30px;
+            width: 100%;
+            height: 80%;
+        }
+
+        #schedule_label {
+            text-align: center;
+            font-size: 25px;
+            color: white;
+            text-transform: uppercase;
+            background-color: #004209;
+            padding: 20px;
+            border-radius: 40px;
+        }
+
+        .viewed_schedule {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            width: 100%;
+            height: 90%;
+            background: green;
+            border-radius: 20px;
+        }
+
+        #seat_container {
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            margin: 20px;
+        }
+
+        .seat {
+            width: 150px;
+            height: 150px;
+            margin: 5px;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: x-large;
+            border-radius: 20px;
+        }
+
+        .schedule_container p {
+            margin-top: 20px;
+            text-align: center;
+            font-style: italic;
+        }
+
+        #error_box{
+            width: 380px;
+            height: 20px;
+            top: 10%;
+            margin: auto;
+            background: rgb(255, 54, 54);
+            padding: 5px;
+            position: relative;
+            border-radius: 20px;
+            display: none;
+        }
+
+        #error_box p{
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 13px;
+            position: relative;
+            top: 3px;
+        }
+
+
+    </style>
+
+</html>

@@ -1,0 +1,186 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.banner{
+    width: 100%;
+    height: 1008px;
+    background-image: linear-gradient(rgba(0,0,0,0.9),rgba(0, 0, 0, 0.3)),url(../images/DLSU_Background0.png);
+    background-size: cover;
+    background-position: cover;
+}
+
+.website_logo{
+    width: 80px;
+    cursor: pointer;
+}
+
+.navbar{
+    width: 85%;
+    margin: auto;
+    padding: 35px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.navbar ul li{
+    list-style: none;
+    display: inline-block;
+    margin: 0 20px;
+    position: relative;
+}
+
+.navbar ul li a{
+    text-decoration: none;
+    color: white;
+    text-transform: uppercase;
+    transition: 0.5s;
+}
+
+.navbar ul li::after{
+    content: '';
+    height: 3px;
+    width: 0%;
+    background: #fdfdfd;
+    position: absolute;
+    left: 0px;
+    bottom: -10px;
+    transition: 0.5s;
+}
+
+.navbar ul li:hover::after{
+    width: 100%;
+    background: rgb(0, 119, 30);
+}
+
+
+.back_img{
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+    filter: invert();
+    transition: 0.5s;
+}
+
+.back_img:hover{
+    width: 70px;
+    height: 70px;
+    cursor: pointer;
+    filter: invert();
+}
+
+.back_nav{
+    position: relative;
+}
+
+.back_nav img {
+    position: absolute;
+    left: 110px;
+    bottom: 0px;
+}
+
+.form_box{
+    width: 380px;
+    height: 575px;
+    top: 6%;
+    margin: auto;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 5px;
+    position: relative;
+    border-radius: 20px;
+}
+
+.form_box h2,h4{
+    position: relative;
+    width: 200px;
+    margin-left: 30px;
+    top: 15px;
+    color: white;
+}
+
+.form_box hr {
+    position: relative;
+    width: 100%;
+    top: 30px;
+}
+
+.form_box .input{
+    position: relative;
+    margin-top: 8%;
+}
+
+.form_box p{
+    position: relative;
+    top: 5px;
+    width: 300px;
+    font-size: 11px;
+    margin-left: 30px;
+    color:#fdfdfd56;
+}
+
+.form_box .input .input_name{
+    display: flex;
+    flex-direction: row;
+    margin: auto;
+}
+
+.form_box .input .input_name .name{
+    width: 135px;
+    margin: 5px;
+    position: relative;
+    left: 25px;
+    bottom: -5px;
+}
+
+.form_box .input .fillup{
+    width: 300px;
+    display: flex;
+    margin: auto;
+    border-radius: 8px;
+    border: none;
+    padding: 10px;
+    text-align: center;
+    margin: 10px auto;
+}
+
+.toggle_btn{
+    margin-top: 20px;
+    margin-left: 10%;
+    width: 300px;
+    border-radius: 30px;
+    padding: 10px 30px;
+    cursor: pointer;
+    outline: none;
+    position: relative;
+    background: none;
+    color: rgb(255, 255, 255);
+    border: 2px solid;
+    transition: 0.5s;
+}
+
+.toggle_btn:hover{
+    background: rgb(0, 119, 30);
+}
+
+.subtext{
+    top: 15px;
+    width: 150px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    position: relative;
+    margin: auto;
+}
+
+.subtext a{
+    color: white;
+    font-size: 11px;
+    text-decoration: none;
+}
+
+.subtext a:hover{
+    text-decoration: underline;
+}

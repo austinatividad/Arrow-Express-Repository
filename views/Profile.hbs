@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+
+<html>
+
+    <head>
+        <title> Arrow Express - Profile </title> 
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" type="text/css" href="../css/ProfileStyle.css">
+        <script src="../js/User.js"> </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+
+    <body>
+
+        <script type="text/javascript">
+            
+            window.onload = function() {
+    
+                    document.getElementById("success_box").style.display = "none";
+
+                    var infoChangeSuccess = new URLSearchParams(window.location.search).get('infoChangeSuccess');
+                    var pwChangeSuccess = new URLSearchParams(window.location.search).get('pwChangeSuccess');
+                    var codeChangeSuccess = new URLSearchParams(window.location.search).get('codeChangeSuccess');
+                    
+                    if (infoChangeSuccess != null && infoChangeSuccess == "true"){
+                        console.log('success');
+                        document.getElementById("success_box").style.display = "block";
+                        $("#success_message").text("Information changed successfully!");
+                        
+                        setTimeout(function(){
+                            document.getElementById("success_box").style.display = "none";
+                        }, 5000);
+                    }
+
+                    if(pwChangeSuccess != null && pwChangeSuccess=="true"){
+                        document.getElementById("success_box").style.display = "block";
+                        $("#success_message").text("Password changed successfully!");
+                        
+                        setTimeout(function(){
+                            document.getElementById("success_box").style.display = "none";
+                        }, 5000);
+                    }
+                    
+                    if(codeChangeSuccess != null && codeChangeSuccess=="true"){
+                        document.getElementById("success_box").style.display = "block";
+                        $("#success_message").text("Security code changed successfully!");
+                        
+                        setTimeout(function(){
+                            document.getElementById("success_box").style.display = "none";
+                        }, 5000);
+                    }
+                    
+                };
+
+        
+        </script>
+
+        <div class="navbar">
+            <a href="/"> <img src= "../images/DLSU_Logo.png" class = "website_logo" style="cursor: pointer;"> </a>
+
+            <style>
+                img:hover{
+                    cursor: default;
+                }
+            </style>   
+
+            <div id="success_box">
+                <p id="success_message"> Success! </p>
+            </div>
+            
+        </div>
+        <div class="content">
+
+            <div id="info_box">
+                <div style="position: relative; background: rgba(0, 0, 0, 0.26); border-radius: 20px; width: 50%; height: 6%; margin: auto; top: 45px;">
+                    <a href="/Search">
+                        <img src="../images/SearchIcon.png" id="searchIcon" style="position: relative; width: 40px; height: 40px; left: 100%; top: 2px; filter:grayscale(); cursor:pointer;">
+                    </a>
+                    <p class = "sub_text" style="top: -36px; font-size: 25px; color: white; font-style: italic; font-weight: bold;"> {{idNumber}} </p>
+                </div>
+                <img src = "{{profilePicture}}" id = "profile_picture">
+                <p class = "title_text" style="top: 50px; font-size: 40px; color: white;"> {{firstName}} {{lastName}} </p>
+                <p class = "sub_text" style="top: 80px; font-size: 20px; color: white;"> {{passengerType}} </p>
+            </div>
+            
+            <div class="right"> 
+
+                <a href="/Reservation?idNumber={{idNumber}}">
+                    <div class="box">
+                        <img src = "../images/Van_Logo.png" id = "van_logo">
+                        <p class = "title_text"> Reserve Now </p>
+                        <p class = "sub_text"> Start reserving your seat now! </p>
+                    </div>
+                </a>
+        
+                <a href="/Schedule">
+                    <div class="box">
+                        <img src = "../images/Schedule_Logo.png" id = "schedule_logo">
+                        <p class = "title_text" style="top: 50px;"> Schedule </p>
+                        <p class = "sub_text" style="top: 50px; "> View seats availability of schedules </p>
+                    </div>
+                </a>
+                
+                <a href="/Settings?idNumber={{idNumber}}">
+                    <div class="box">
+                        <img src = "../images/ProfileSettings_Logo.png" id = "logout_logo">
+                        <p class = "title_text" style="top: 50px;" > Settings </p>
+                        <p class = "sub_text" style="top: 50px;"> View Profile Settings </p>
+                    </div>
+                </a>
+        
+                <a href="/Logout" onclick="logoutAccount()">
+                    <div class="logout_box">
+                        <img src = "../images/Logout_Logo.png" id = "logout_logo">
+                        <p class = "title_text" style="top: 50px;" > Logout </p>
+                        <p class = "sub_text" style="top: 50px;"> Exit Arrow Express </p>
+                    </div>
+                </a>
+
+            </div>  
+
+        </div>
+
+    </body>
+
+    <style>
+
+        a{
+            text-decoration: none;
+        }
+
+        #van_logo{
+            width: 200px;
+            height: 200px;
+            margin: auto;
+            display: block;
+        }
+
+        #schedule_logo{
+            position: relative;
+            top: 30px;
+            width: 150px;
+            height: 150px;
+            margin: auto;
+            display: block;
+        }
+
+        #logout_logo{
+            position: relative;
+            top: 30px;
+            width: 160px;
+            height: 160px;
+            margin: auto;
+            display: block;
+        }
+
+        .title_text{
+            position: relative;
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            text-decoration: none;
+            color: black;
+        }
+
+        .sub_text{
+            position: relative;
+            text-align: center;
+            font-style: italic;
+            text-decoration: none;
+            color: black;
+        }
+
+         #success_box{
+            width: 380px;
+			height: 20px;
+			top: 10%;
+			left: 50%;
+			margin: auto;
+			background: rgb(78, 255, 54);
+			padding: 5px;
+			position: absolute;
+			border-radius: 20px;
+			display: none;
+			transform: translate(-50%,-50%);
+        }
+
+        #success_box p{
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 13px;
+            position: relative;
+            top: 3px;
+        }
+
+        
+    </style>
+
+</html>

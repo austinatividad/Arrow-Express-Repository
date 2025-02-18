@@ -1,0 +1,78 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+.container{
+    position: relative;
+    top: 20px;
+    height: 77%;
+    width: 100%;
+    margin: auto;
+    overflow-y: scroll;
+}
+
+.container::-webkit-scrollbar {
+    display: none;
+}
+.container{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.results_container{
+    position: relative;
+    height: 70px;
+    width: 92%;
+    margin: auto;
+}
+
+.results_container .card{
+    position: relative;
+    width: 100%;
+    height: 100%;
+    margin: auto;
+    margin-top: 1em;
+    background-image: linear-gradient(rgb(0, 129, 43),rgba(0, 0, 0, 0.856)), url(../images/DLSU_Background0.png);
+    background-size: cover;
+    background-position: cover;
+    background-position-y: 1050px;
+    border-radius: 50px;
+    border: 5px solid white;
+    transition: 0.5s;
+    cursor: pointer;
+}
+.results_container .card:hover{
+    transform: scale(1.02);
+}
+
+.results_container .card img{
+    position: relative;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    margin-left: 20px;
+    margin-top: 7px;
+    float: left;
+    object-fit: cover; 
+    border: 2px solid white;
+}
+
+.results_container .card p{
+    position: relative;
+    line-height: 25px;
+    left: 20px;
+    top: 10px;
+}
+
+.results_container .card .name{
+    font-size: larger;
+    font-weight: bold;
+    color: white;
+}
+
+.results_container .card .designation{
+    font-style: italic;
+    color: white;
+}

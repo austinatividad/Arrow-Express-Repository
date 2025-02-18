@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Reserve </title>
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/FormStyle.css">  <!-- Kailangan to if may separate CSS file -->
+        <link rel="stylesheet" href="../css/ReservationStyle.css">
+        <script src="../js/User.js"> </script>
+        <script src="../js/Reservation.js" defer> </script>
+        <script src="../js/UserAdmin.js" defer> </script>
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+
+    <body>
+
+        <script>
+            window.onload = function() {
+
+                document.getElementById("success_box").style.display = "none";
+                document.getElementById("error_box").style.display = "none";
+
+                readyHTML({{displayUI}});
+				
+				{{#each result}}
+					hideScheduleForm(true, ["{{startCampus}}", "{{date}}", "{{entryLoc}}", "{{entryTime}}", "{{exitLoc}}", "{{exitTime}}", {{idNumber}}], false);
+				{{/each}}
+
+                var adminLink = '/ProfileAdmin?idNumber=' + {{idNumber}};
+                var userLink = '/Profile?idNumber=' + {{idNumber}};
+
+                if ( {{isAdmin}} == true ){
+                    document.getElementById('backButton').setAttribute('href', adminLink);
+                }
+                else{
+                    document.getElementById('backButton').setAttribute('href', userLink);
+                }
+
+                var reserveUserStatus = new URLSearchParams(window.location.search).get('reserveUserSuccess');
+                var reserveUpdateStatus = new URLSearchParams(window.location.search).get('isUpdateSuccess');
+                var reserveDeleteSatus = new URLSearchParams(window.location.search).get('isDeleteSuccess');
+
+                if ( reserveUserStatus != null && reserveUserStatus == "true"){
+                    document.getElementById("success_box").style.display = "block";
+                    $("#success_message").text("User reservation successful!");
+                    
+                    setTimeout(function(){
+                        document.getElementById("success_box").style.display = "none";
+                    }, 3000);
+                }
+                else if (reserveUserStatus != null && reserveUserStatus == "false") {
+                    document.getElementById("error_box").style.display = "block";
+                    $("#error_message").text("User reservation failed. Please try again.");
+
+                    setTimeout(function(){
+                        document.getElementById("error_box").style.display = "none";
+                    }, 3000);
+                }
+
+                if ( reserveUpdateStatus == "true" ){
+                    document.getElementById("success_box").style.display = "block";
+                    $("#success_message").text('Reservation successfully updated!');
+
+                    setTimeout(function(){
+                        document.getElementById("success_box").style.display = "none";
+                    }, 3000);
+                }
+                else if ( reserveUpdateStatus == "false" ){
+                    document.getElementById("error_box").style.display = "block";
+                    $("#error_message").text("Reservation failed to update. Please try again.");
+
+                    setTimeout(function(){
+                        document.getElementById("error_box").style.display = "none";
+                    }, 3000);
+                }
+
+                if ( reserveDeleteSatus == "true" ){
+                    document.getElementById("success_box").style.display = "block";
+                    $("#success_message").text('Reservation successfully deleted!');
+
+                    setTimeout(function(){
+                        document.getElementById("success_box").style.display = "none";
+                    }, 3000);
+                }
+                
+                
+            };
+        </script>
+        
+        <div class = "banner" > 
+
+            <div class="navbar">
+                <a href="" id="backButton"><img src="../images/Leftarrow.png" class = "back_img"></a>
+
+                <div id="success_box">
+                    <p id="success_message"> Success! </p>
+                </div>
+
+                <div id="error_box">
+                    <p id="error_message"> Invalid User/Password. Check your input </p>
+                </div>
+
+                <img src= "../images/DLSU_Logo.png" class = "website_logo">
+
+                <style>
+                    img:hover{
+                        cursor: default;
+                    }
+                </style>   
+
+            </div>
+            
+            <div class="content">
+
+                <h1 style="position: relative; color: white; left: 50px; top: 40px;"> Reserve </h1>
+                <p style="position: relative; color: white; left: 50px; margin-top: 40px; font-style: italic;"> Reserve your spot now on your designated place </p>
+                <button class="reserve_btn" id="reserve_schedule_btn" onclick="showUserForm();"> Reserve schedule </button> 
+                <button class="reserve_btn" id="reserveUser_schedule_btn" onclick="showAdminForm();" style="margin-left: 20px; display: none;"> User reserve </button> 
+                <style> 
+                    .reserve_btn{
+                        position: absolute; 
+                        left: 75%;
+                        bottom: 5%;
+                        padding: 15px; 
+                        font-weight: bold; 
+                        background: transparent;
+                        border: 5px solid green;
+                        color: white;
+                        cursor: pointer; 
+                        border-radius: 30px; 
+                    }
+                    
+                    .reserve_btn:hover{
+                        background: green;
+                        color: black;
+                    } 
+
+                    #reserve_schedule_btn{
+                        position: relative;
+                    }
+
+                    #reserveUser_schedule_btn{
+                        position: relative;
+                        border: 5px solid yellow;
+                    }
+
+                    #reserveUser_schedule_btn:hover{
+                        position: relative;
+                        background: yellow;
+                    }
+					
+					.text_reserved_schedule hr{
+						margin-left: 10px; 
+						border: 2px solid white; 
+						border-radius: 30px;
+					}
+
+                     #success_box{
+                        width: 380px;
+                        height: 20px;
+                        top: 0%;
+                        margin: auto;
+                        background: rgb(97, 255, 77);
+                        padding: 5px;
+                        border-radius: 20px;
+                        display: none;
+                    }
+
+                    #success_box p{
+                        text-align: center;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        position: relative;
+                        top: 3px;
+                    }
+
+                    #error_box{
+                        width: 380px;
+                        height: 20px;
+                        top: 0%;
+                        margin: auto;
+                        background: rgb(255, 54, 54);
+                        padding: 5px;
+                        position: relative;
+                        border-radius: 20px;
+                        display: none;
+                    }
+
+                    #error_box p{
+                        text-align: center;
+                        font-family: sans-serif;
+                        font-size: 13px;
+                        position: relative;
+                        top: 3px;
+                    }
+
+					
+
+                </style>
+
+                <hr style="position: relative; margin-top: 2px; border: 2px solid white;">
+
+                <div class = "schedule_container">
+                    <!-- This where the funny reservations appear -->
+					
+
+                </div>
+                                
+                <div class="form_box" > <!-- RESERVE SCHEDULE BOX Why did this have a 'return false' onclick-->
+                    <div id="blur_box"> </div>
+                    <h2> Reserve Now </h2>
+                    <h4> Just one-click away </h4>
+                    <hr>
+                    <div class="input">
+                        <form action="/Reservation" method="post">
+                            <div class="button_box">
+                                <div id="btn"></div>
+                                <button type="button" class="switch" id="laguna_btn" onclick="leftClick();"> Laguna </button>
+                                <button type="button" class="switch" id="manila_btn" onclick="rightClick();"> Manila </button> 
+                            </div>
+                            
+                            <label for="user_idNumber"></label>
+							<input type="hidden" id="hiddenStartCampus" required name="hiddenStartCampus" value="">
+							<input type="hidden" id="hiddenIdNumber"  name="hiddenIdNumber" value="">
+							<input type="hidden" id="hiddenEntryLoc" name="hiddenEntryLoc" value="">
+							<input type="hidden" id="hiddenEntryTime" name="hiddenEntryTime" value="">
+							<input type="hidden" id="hiddenExitLoc" name="hiddenExitLoc" value="">
+							<input type="hidden" id="hiddenExitTime" name="hiddenExitTime" value="">
+							<input type="hidden" id="adminId" name="adminId" value="">
+							
+                            <input type="text" required placeholder="ID Number" class="fillup" name="user_idNumber" id="user_idNumber" style="position: relative; top: -25px; display: block;" value="" pattern="[0-9]+" minlength="8" maxlength="8">
+                            
+							<input type="date" class="fillup" required name="user_date" id="user_date" >
+    
+                            <div class="entry">
+                                <img src="../images/Help.png" style="width: 25px; height: 25px; position: relative; filter:invert(1); top: 15px; left:10px; cursor: help;" title="From home, location going to be picked up.">
+                                <select required name="user_entry" id="user_entry" class="fillup" onchange="readyChangeTime('user_entry','user_entryTime');" style="width: 185px; margin: 10px; position: relative; left: 5px; ">
+                                    <option value="" disabled selected hidden s> Entry Location </option>
+                                    <option value="0"> Paseo -> DLSU LC </option>
+                                    <option value="1"> Carmona -> DLSU LC  </option>
+                                    <option value="2"> Pavilion Mall -> DLSU LC </option>
+                                    <option value="3"> Walter Mart -> DLSU LC </option>
+                                    <option value="4"> N/A </option>
+                                </select>
+                                <select required name="user_entryTime" id="user_entryTime" class="fillup" style="width: 120px; ">
+                                    <option value="" disabled selected hidden s> Time Slot </option>
+                                    <option value="0"> 06:00 AM </option>
+                                    <option value="1"> 07:30 AM </option>
+                                    <option value="2"> 09:30 AM </option>
+                                    <option value="3"> 11:00 AM </option>
+                                    <option value="4"> 01:00 PM </option>
+                                    <option value="5"> 02:30 PM </option>
+                                    <option value="6"> 03:30 PM </option>
+                                    <option value="7"> 05:10 PM </option>
+                                    <option value="8"> 06:15 PM </option>
+                                    <option value="9"> 05:10 PM </option>
+                                    <option value="10"> 07:45 PM </option>
+                                    <option value="11"> N/A </option>
+                                </select>
+                            </div>
+    
+                            <div class="exit"> </style>
+                                <img src="../images/Help.png" style="width: 25px; height: 25px; position: relative; filter:invert(1); top: 15px; left:10px; cursor: help;" title="From De La Salle University, location going to be dropped-off.">
+                                <select required name="user_exit" id="user_exit" class="fillup" onchange="readyChangeTime('user_exit','user_exitTime');" style="width: 185px; margin: 10px; position: relative; left: 5px;">
+                                    <option value="" disabled selected hidden s> Exit Location </option>
+                                    <option value="0"> DLSU LC -> DLSU Manila </option>
+                                    <option value="1"> DLSU LC -> Paseo </option>
+                                    <option value="2"> DLSU LC -> Carmona </option>
+                                    <option value="3"> DLSU LC -> Pavilion Mall </option>
+                                    <option value="4"> DLSU LC -> Walter Mart </option>
+                                    <option value="5"> N/A </option>
+                                </select>
+                                <select required name="user_exitTime" id="user_exitTime" class="fillup" style="width: 120px;">
+                                    <option value="" disabled selected hidden s> Time Slot </option>
+                                    <option value="0"> 06:00 AM </option>
+                                    <option value="1"> 07:30 AM </option>
+                                    <option value="2"> 09:30 AM </option>
+                                    <option value="3"> 11:00 AM </option>
+                                    <option value="4"> 01:00 PM </option>
+                                    <option value="5"> 02:30 PM </option>
+                                    <option value="6"> 03:30 PM </option>
+                                    <option value="7"> 05:10 PM </option>
+                                    <option value="8"> 06:15 PM </option>
+                                    <option value="9"> 05:10 PM </option>
+                                    <option value="10"> 07:45 PM </option>
+                                    <option value="11"> N/A </option>
+                                </select>
+                            </div>
+								
+                            <button type="submit" class="toggle_btn" id="reserve_btn" onclick="populateFields()"><!--onclick="hideScheduleForm();"--> Reserve <style> .toggle_btn{ font-size: large; font-weight: bold;}</style></button>
+                        </form>
+                        
+                    </div>
+    
+                    <div class="subtext">
+                        <a onclick="cancelScheduleForm();" style="cursor:pointer;">Cancel </a>
+                    </div>
+    
+                </div>
+
+				<div class="form_box2" id="edit_box" style="display: none; height: 370px"> <!-- EDIT BOX -->
+                    <div id="blur_box"> </div>
+                    <h2> Edit Reservation</h2>
+                    <hr>
+                    <div class="input">
+                        <form action="/ReservationUpdate" method="post">
+                            <div class="button_box">
+                                <div id="ebtn"></div>
+                                <button type="button" class="switch" id="laguna_btn" onclick="eleftClick();"> Laguna </button>
+                                <button type="button" class="switch" id="manila_btn" onclick="erightClick();"> Manila </button> 
+                            </div>
+							
+							<input type="hidden" id="ehiddenStartCampus" required name="ehiddenStartCampus" value="">
+							<input type="hidden" id="ehiddenIdNumber" required name="ehiddenIdNumber" value="">
+							<input type="hidden" id="ehiddenEntryLoc" name="ehiddenEntryLoc" value="">
+							<input type="hidden" id="ehiddenEntryTime" name="ehiddenEntryTime" value="">
+							<input type="hidden" id="ehiddenExitLoc" name="ehiddenExitLoc" value="">
+							<input type="hidden" id="ehiddenExitTime" name="ehiddenExitTime" value="">
+							
+							<input type="hidden" id="eCurrStartCampus" name ="eCurrStartCampus" value="">
+							<input type="hidden" id="eCurrIdNumber" name = "eCurrIdNumber" value="">
+							<input type="hidden" id="eCurrDate" name="eCurrDate" value="">
+							<input type="hidden" id="eCurrEntryLoc" name="eCurrEntryLoc" value="">
+							<input type="hidden" id="eCurrEntryTime" name="eCurrEntryTime" value="">
+							<input type="hidden" id="eCurrExitLoc" name="eCurrExitLoc" value="">
+							<input type="hidden" id="eCurrExitTime" name="eCurrExitTime" value="">
+							
+                            <input type="date" placeholder="Date" class="fillup" required name="user_date" id="user_date" >
+    
+                            <div class="entry">
+                                <img src="../images/Help.png" style="width: 25px; height: 25px; position: relative; filter:invert(1); top: 15px; left:10px; cursor: help;" title="From home, location going to be picked up.">
+                                <select name="editUser_entry" id="editUser_entry" class="fillup" onchange="readyChangeTime('editUser_entry','editUser_entryTime');" style="width: 185px; margin: 10px; position: relative; left: 5px; ">
+                                    <option value="" disabled selected hidden s> Entry Location </option>
+                                    <option value="0"> Paseo -> DLSU LC </option>
+                                    <option value="1"> Carmona -> DLSU LC  </option>
+                                    <option value="2"> Pavilion Mall -> DLSU LC </option>
+                                    <option value="3"> Walter Mart -> DLSU LC </option>
+                                    <option value="4"> N/A </option>
+                                </select>
+                                <select name="editUser_entryTime" id="editUser_entryTime" class="fillup" style="width: 120px; ">
+                                    <option value="" disabled selected hidden s> Time Slot </option>
+                                    <option value="0"> 06:00 AM </option>
+                                    <option value="1"> 07:30 AM </option>
+                                    <option value="2"> 09:30 AM </option>
+                                    <option value="3"> 11:00 AM </option>
+                                    <option value="4"> 01:00 PM </option>
+                                    <option value="5"> 02:30 PM </option>
+                                    <option value="6"> 03:30 PM </option>
+                                    <option value="7"> 05:10 PM </option>
+                                    <option value="8"> 06:15 PM </option>
+                                    <option value="9"> 05:10 PM </option>
+                                    <option value="10"> 07:45 PM </option>
+                                    <option value="11"> N/A </option>
+                                </select>
+                            </div>
+    
+                            <div class="exit"> </style>
+                                <img src="../images/Help.png" style="width: 25px; height: 25px; position: relative; filter:invert(1); top: 15px; left:10px; cursor: help;" title="From De La Salle University, location going to be dropped-off.">
+                                <select name="editUser_exit" id="editUser_exit" class="fillup" onchange="readyChangeTime('editUser_exit','editUser_exitTime');" style="width: 185px; margin: 10px; position: relative; left: 5px;">
+                                    <option value="" disabled selected hidden s> Exit Location </option>
+                                    <option value="0"> DLSU LC -> DLSU Manila </option>
+                                    <option value="1"> DLSU LC -> Paseo </option>
+                                    <option value="2"> DLSU LC -> Carmona </option>
+                                    <option value="3"> DLSU LC -> Pavilion Mall </option>
+                                    <option value="4"> DLSU LC -> Walter Mart </option>
+                                    <option value="5"> N/A </option>
+                                </select>
+                                <select name="editUser_exitTime" id="editUser_exitTime" class="fillup" style="width: 120px;">
+                                    <option value="" disabled selected hidden s> Time Slot </option>
+                                    <option value="0"> 06:00 AM </option>
+                                    <option value="1"> 07:30 AM </option>
+                                    <option value="2"> 09:30 AM </option>
+                                    <option value="3"> 11:00 AM </option>
+                                    <option value="4"> 01:00 PM </option>
+                                    <option value="5"> 02:30 PM </option>
+                                    <option value="6"> 03:30 PM </option>
+                                    <option value="7"> 05:10 PM </option>
+                                    <option value="8"> 06:15 PM </option>
+                                    <option value="9"> 05:10 PM </option>
+                                    <option value="10"> 07:45 PM </option>
+                                    <option value="11"> N/A </option>
+                                </select>
+                            </div>
+    
+                            <button type="submit" class="toggle_btn" id="edit_btn" onclick="hideEditForm();"> Confirm <style> .toggle_btn{ font-size: large; font-weight: bold; margin-top: 15px;}</style></button>
+                        </form>
+                        
+                    </div>
+    
+                    <div class="subtext">
+                        <a onclick="cancelEditForm();" style="cursor:pointer;">Cancel </a>
+                    </div>
+    
+                </div>
+				
+				<style>
+					#delete_btn{
+						margin-top: 50px; 
+						background-color: rgb(131, 0, 0); 
+						color: rgb(255, 255, 255);
+					}
+					#delete_btn:hover{
+						margin-top: 50px; 
+						background-color: rgb(255, 0, 0); 
+						color: rgb(255, 255, 255);
+					}
+
+				</style>
+				
+ <!-- DELETE BOX -->
+				<div class="form_box2" id="delete_box" style="display: none; height: auto;">
+                    <div id="blur_box"> </div>
+                    <h2 style="width: 80%;"> Delete Reservation</h2>
+					<h4 style="width: 80%"> Are you sure you want to delete this reservation? </h4>
+                    <hr>
+                    <div class="input">
+                        <form action="/ReservationDelete" method="post">
+							<input type="hidden" id="dCurrStartCampus" required name="dCurrStartCampus" value="">
+							<input type="hidden" id="dCurrIdNumber" required name="dCurrIdNumber" value="">
+							<input type="hidden" id="dCurrDate" name="dCurrDate" value="">
+							<input type="hidden" id="dCurrEntryLoc" name="dCurrEntryLoc" value="">
+							<input type="hidden" id="dCurrEntryTime" name="dCurrEntryTime" value="">
+							<input type="hidden" id="dCurrExitLoc" name="dCurrExitLoc" value="">
+							<input type="hidden" id="dCurrExitTime" name="dCurrExitTime" value="">
+                            <button type="submit" class="toggle_btn" id="delete_btn" onclick="hideDeleteForm();"> Delete <style> .toggle_btn{ font-size: large; font-weight: bold;}</style></button>
+						</form>
+                            <button type="submit" class="toggle_btn" id="cancel_btn" onclick="cancelDeleteForm();"> Cancel</button>
+						                    
+                    </div>
+    
+                </div>
+            </div>
+
+        </div>
+    </body>
+</html>

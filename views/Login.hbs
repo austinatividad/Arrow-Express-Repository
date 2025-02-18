@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title> Arrow Express - Login </title> 
+        <script src="../js/User.js"> </script>
+        <link rel="icon" type="image/png" href="../images/DLSU_Logo.png">
+        <link rel="stylesheet" href="../css/FormStyle.css">  <!-- Kailangan to if may separate CSS file -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    </head>
+
+    <body>
+
+        <script> 
+
+             window.onload = function(){
+
+                var check = "{{isValid}}";
+                var checkCodeChange = "{{codeChange}}";
+                var checkLoginCode = "{{isCodeCorrect}}"
+                var checkRegistered = "{{isRegistered}}"
+
+                document.getElementById("error_box").style.display = "none";
+
+                if ( check == "false" ){
+                    document.getElementById("error_box").style.display = "block";
+
+                    setTimeout(function(){
+                        document.getElementById("error_box").style.display = "none";
+                    }, 3000);
+                }
+
+                if ( checkCodeChange == "true"){
+                    document.getElementById("success_box").style.display = "block";
+                    $("#success_message").text("Password changed successfully!");
+                    
+
+                    setTimeout(function(){
+                        document.getElementById("success_box").style.display = "none";
+                    }, 3000);
+                }
+                else{
+                    document.getElementById("success_box").style.display = "none";
+                }
+
+                if ( checkLoginCode == "false" ){
+
+                    document.getElementById("error_box").style.display = "block";
+                    $("#error_message").text("Security code is incorrect. Please try again.");
+
+                    setTimeout(function(){
+                        document.getElementById("error_box").style.display = "none";
+                    }, 3000);
+                }
+
+                if ( checkRegistered == "true" ){
+                    document.getElementById("success_box").style.display = "block";
+                    $("#success_message").text("Account registered successfully!");
+                    
+
+                    setTimeout(function(){
+                        document.getElementById("success_box").style.display = "none";
+                    }, 3000);
+                }
+
+             }
+
+            $("#loginForm").submit(function(e){
+                e.preventDefault();
+            });
+            
+        </script>
+
+       
+        <div class = "banner"> 
+            <div class="navbar">
+                <a href="/"><img src="../images/Leftarrow.png" class = "back_img"></a>
+                <a href="/"> <img src= "../images/DLSU_Logo.png" class = "website_logo"></a>
+            </div>
+            
+            <div class="form_box">
+                <h2> Login </h2>
+                <h4> Ready, Set, and Go! </h4>
+                <hr>
+                <div class="input">
+                    <form action="/Login" id="loginForm" method="post">
+                        <label for="user_idNumber"></label>
+                        <input type="text" placeholder="ID Number" class="fillup" name="user_idNumber" id="user_idNumber" required pattern="[0-9]+" minlength="8" maxlength="8" >
+                        <label for="user_password"></label>
+                        <input type="password" placeholder="Password" class="fillup" name="user_password" id="user_password" required>
+                        <button type="submit" class="toggle_btn" > Login <style> .toggle_btn{ font-size: large; font-weight: bold;} </style> </button>
+                    </form>
+                </div>
+
+                <div class="subtext">
+                    <a href="/SignUp"> Register | </a>
+                    <a href="/ForgotPassword"> Forgot Password? </a>
+                </div>
+            </div>
+
+            <div id="error_box">
+                <p id="error_message"> Invalid User/Password. Check your input </p>
+            </div>
+
+            <div id="success_box">
+                <p id="success_message"> Success! </p>
+            </div>
+
+        </div>
+    </body>
+
+    <style>
+
+        .form_box{
+            height: 300px;
+            margin: 100px auto;
+        }
+
+        .form_box .input{
+            top: 25px;
+        }
+
+        .toggle_btn{
+            top: -10px;
+        }
+
+        .subtext{
+            top: 30px;
+        }
+
+        #error_box{
+            width: 380px;
+            height: 20px;
+            top: 0%;
+            margin: auto;
+            background: rgb(255, 54, 54);
+            padding: 5px;
+            position: relative;
+            border-radius: 20px;
+            display: none;
+        }
+
+        #error_box p{
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 13px;
+            position: relative;
+            top: 3px;
+        }
+
+         #success_box{
+            width: 380px;
+			height: 20px;
+			top: 10%;
+			left: 50%;
+			margin: auto;
+			background: rgb(78, 255, 54);
+			padding: 5px;
+			position: absolute;
+			border-radius: 20px;
+			display: none;
+			transform: translate(-50%,-50%);
+        }
+
+        #success_box p{
+            text-align: center;
+            font-family: sans-serif;
+            font-size: 13px;
+            position: relative;
+            top: 3px;
+        }
+
+    </style>
+
+</html>
