@@ -6,6 +6,7 @@ const User = require('../models/userdb.js');
 const Admin = require('../models/admindb.js');
 
 const UserRepository = require('../repositories/UserRepository.js');
+const AdminRepository = require('../repositories/AdminRepository.js');
 
 /*
     defines an object which contains functions executed as callback
@@ -63,9 +64,9 @@ const controller = {
         if ( req.session.idNumber != req.query.idNumber) {
             res.status(200).redirect('/Settings?idNumber=' + req.session.idNumber);     
         } else {
-            
-            const resultUser = await UserRepository.getUserById(req.session.idNumber);
-            const resultAdmin = await UserRepository.getAdminById(req.session.idNumber);
+
+            const resultUser = await UserRepository.findById(req.session.idNumber);
+            const resultAdmin = await AdminRepository.findById(req.session.idNumber);
     
             var details = {};
             
