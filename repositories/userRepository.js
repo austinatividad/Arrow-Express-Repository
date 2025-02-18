@@ -239,6 +239,38 @@ const UserRepository = {
       throw new Error("Security code verification failed");
     }
   },
+
+  /**
+   * Search for users based on a search term.
+   * @param {string} searchTerm - The search term to look for.
+   * @returns {Promise<Array>} Array of matching users.
+   */
+  searchUsers: async function (searchTerm) {
+    try {
+      const search = await User.find(
+        {
+          $or: [
+            { firstName: { $regex: new RegExp('^' + searchTerm + '.*', 'i') } },
+            { lastName: { $regex: new RegExp('^' + searchTerm + '.*', 'i') } },
+            { $expr: { $regexMatch: { 
+                input: { $concat: ['$firstName', ' ', '$lastName'] }, 
+                regex: new RegExp('^' + searchTerm + '.*', 'i') 
+              } 
+            }},
+            { passengerType: { $regex: new RegExp('^' + searchTerm + '.*', 'i') } },
+            { idNumber: parseInt(searchTerm) || 0 },
+            { profilePicture: { $regex: new RegExp('^' + searchTerm + '.*', 'i') } }
+          ]
+        },
+        'firstName lastName "$expr" passengerType idNumber profilePicture'
+      ).limit(10);
+
+      return search;
+    } catch (error) {
+      console.error("Error searching users:", error);
+      throw new Error("User search failed");
+    }
+  },
 };
 
 module.exports = UserRepository;

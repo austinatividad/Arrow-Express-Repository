@@ -1,83 +1,65 @@
 const db = require('../models/db.js');
-
 const User = require('../models/userdb.js');
-
 const Reservation = require('../models/reservationdb.js');
+const UserRepository = require('../repositories/UserRepository.js');
+const ReservationRepository = require('../repositories/ReservationRepository.js');
 
 const searchController = {
-
-    getSearch : function (req, res) {
-        res.render('Search', res);
+    getSearch: function (req, res) {
+        res.render('Search');
     },
 
-    postUserSearch : async function (req, res) {
-        let payload = req.body.payload.trim();
-        // TODO: Refactor to use a repository design pattern
-        let search = await User.find(
-            {
-              $or: [
-                { firstName: { $regex: new RegExp('^' + payload + '.*', 'i') } },
-                { lastName: { $regex: new RegExp('^' + payload + '.*', 'i') } },
-                { $expr: { $regexMatch: { input: { $concat: ['$firstName', ' ', '$lastName'] }, regex: new RegExp('^' + payload + '.*', 'i') } } },
-                { passengerType: { $regex: new RegExp('^' + payload + '.*', 'i') } },
-                { idNumber: parseInt(payload) || 0 },
-                { profilePictre: { $regex: new RegExp('^' + payload + '.*', 'i') } }
-              ]
-            },
-            'firstName lastName "$expr" passengerType idNumber profilePicture'
-          ).exec();
-
-        search = search.slice(0, 10);
-        res.send({payload: search});
-    },
-
-    getSearchProfile : async function (req, res) {
-      const query = {idNumber: req.query.idNumber};
-      
-        const projection = 'idNumber firstName lastName designation passengerType profilePicture';
-      
-        // TODO: Refactor to use a repository design pattern
-        const result = await db.findOne(User, query, projection);
-      
-        if (result != null) {
-      
-          const details = {
-            idNumber: result.idNumber,
-            firstName: result.firstName,
-            lastName: result.lastName,
-            designation: result.designation,
-            passengerType: result.passengerType
-          };
-
-          if ( result.profilePicture == "public/images/profilepictures/Default.png" || result.profilePicture == null) {
-            details.profilePicture = "images/profilepictures/Default.png"
-          }
-          else if ( result.profilePicture != "public/images/profilepictures/Default.png") {
-            details.profilePicture = result.profilePicture;
-          }
-          else{
-            details.profilePicture = "images/profilepictures/Default.png";
-          }
-      
-          res.render('SearchProfile', details);
-          
-        } else {
-          res.render('Error',res);
+    postUserSearch: async function (req, res) {
+        try {
+            const payload = req.body.payload.trim();
+            const searchResults = await UserRepository.searchUsers(payload);
+            res.send({ payload: searchResults });
+        } catch (error) {
+            console.error('Search error:', error);
+            res.status(500).send({ error: 'Search failed' });
         }
-
     },
 
-    getSearchReservation : async function (req, res) {
+    getSearchProfile: async function (req, res) {
+        try {
+            const { idNumber } = req.query;
+            const user = await UserRepository.findById(idNumber);
 
-        var userID = req.query.idNumber;
+            if (!user) {
+                return res.render('Error', { error: 'User not found' });
+            }
 
-        // TODO: Refactor to use a repository design pattern
-        const result = await db.findMany(Reservation, {idNumber: userID}, {_id:0, __v:0});
+            const details = {
+                idNumber: user.idNumber,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                designation: user.designation,
+                passengerType: user.passengerType,
+                profilePicture: user.profilePicture === "public/images/profilepictures/Default.png" || !user.profilePicture
+                    ? "images/profilepictures/Default.png"
+                    : user.profilePicture
+            };
 
-        res.render('SearchReservation', {result: result, idNumber: userID});
+            res.render('SearchProfile', details);
+        } catch (error) {
+            console.error('Profile search error:', error);
+            res.render('Error', { error: 'Failed to retrieve profile' });
+        }
+    },
 
+    getSearchReservation: async function (req, res) {
+        try {
+            const { idNumber } = req.query;
+            const reservations = await ReservationRepository.findUserReservations(idNumber);
+            res.render('SearchReservation', { 
+                result: reservations, 
+                idNumber 
+            });
+        } catch (error) {
+            console.error('Reservation search error:', error);
+            res.render('Error', { error: 'Failed to retrieve reservations' });
+        }
     }
-
 };
 
 module.exports = searchController;
