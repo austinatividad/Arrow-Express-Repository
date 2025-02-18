@@ -1,66 +1,63 @@
-const db = require('../models/db.js');
-
-const User = require('../models/userdb.js');
-
-const Admin = require('../models/admindb.js');
-
-// import module `bcrypt`
-const bcrypt = require('bcrypt');
+const UserRepository = require('../repositories/UserRepository.js');
+const AdminRepository = require('../repositories/AdminRepository.js');
 
 const securityController = {
-
     getSecurity: async function (req, res) {
+        try {
+            const { idNumber } = req.query;
+            
+            const user = await UserRepository.findById(idNumber);
+            const admin = await AdminRepository.findById(idNumber);
 
-        // TODO: Refactor to use a repository design pattern
-        const query = {idNumber: req.query.idNumber};
-
-        const projection = 'idNumber';
-      
-        const result = await db.findOne(User, query, projection);
-        const result2 = await db.findOne(Admin, query, projection);
-
-        var details = {};
-
-        if ( result != null ){
-            details = {
-              idNumber: result.idNumber
+            if (user) {
+                return res.render('Security', { idNumber });
+            } else if (admin) {
+                return res.render('SecurityAdmin', { idNumber });
             }
-        } else if (result2 != null) {
-            details = {
-              idNumber: result2.idNumber
-            }
-        } else {
-          console.log('User does not exist.');
+
+            res.render('Error', { error: 'Account not found' });
+        } catch (error) {
+            console.error('Security page error:', error);
+            res.render('Error', { error: 'Failed to load security page' });
         }
-          
-        
-        
-        res.render('Security', details);
     },
 
-    postSecurity: async function (req, res) {
-
-        const idNumber = req.body.idNumber;
-        const securityCode = req.body.user_securityCode;
-      
+    postVerifySecurityCode: async function (req, res) {
         try {
-          // TODO: Refactor to use a repository design pattern
-          const query = { idNumber: idNumber };
-          const projection = { idNumber: 1, securityCode: 1};
-          const result = await db.findOne(User, query, projection);
-          const result2 = await db.findOne(Admin, query, projection);
+            const { idNumber, securityCode } = req.body;
 
-          if (result != null && await bcrypt.compare(securityCode, result.securityCode)) 
-			res.status(200).redirect('/Profile?idNumber=' + idNumber);
-          else if ( result2 != null && await bcrypt.compare(securityCode, result2.securityCode))
-			res.status(200).redirect('/ProfileAdmin?idNumber=' + idNumber);
-          else
-            res.render('Login', { isCodeCorrect: false });
-		
-        } catch (err) {
-          res.status(500).send(err);
+            const user = await UserRepository.findById(idNumber);
+            if (user) {
+                const isValid = await UserRepository.verifySecurityCode(idNumber, securityCode);
+                if (isValid) {
+                    return res.redirect('/ChangePassword?idNumber=' + idNumber);
+                }
+                return res.render('Security', { 
+                    idNumber, 
+                    error: 'Invalid security code',
+                    verifySuccess: false 
+                });
+            }
+
+            const admin = await AdminRepository.findById(idNumber);
+            if (admin) {
+                const isValid = await AdminRepository.verifySecurityCode(idNumber, securityCode);
+                if (isValid) {
+                    return res.redirect('/ChangePasswordAdmin?idNumber=' + idNumber);
+                }
+                return res.render('SecurityAdmin', { 
+                    idNumber, 
+                    error: 'Invalid security code',
+                    verifySuccess: false 
+                });
+            }
+
+            res.render('Error', { error: 'Account not found' });
+        } catch (error) {
+            console.error('Security code verification error:', error);
+            res.render('Error', { error: 'Failed to verify security code' });
         }
     }
-}
+};
 
 module.exports = securityController;

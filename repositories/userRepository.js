@@ -221,6 +221,24 @@ const UserRepository = {
       throw new Error("Database update failed");
     }
   },
+
+  /**
+   * Verifies a user's security code.
+   * @param {string} idNumber - The ID number of the user.
+   * @param {string} securityCode - The security code to verify.
+   * @returns {Promise<boolean>} True if the security code is valid, false otherwise.
+   */
+  verifySecurityCode: async function (idNumber, securityCode) {
+    try {
+      const user = await User.findOne({ idNumber }, 'securityCode');
+      if (!user) return false;
+
+      return await bcrypt.compare(securityCode, user.securityCode);
+    } catch (error) {
+      console.error("Error verifying security code:", error);
+      throw new Error("Security code verification failed");
+    }
+  },
 };
 
 module.exports = UserRepository;

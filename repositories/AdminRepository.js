@@ -194,7 +194,25 @@ const AdminRepository = {
       console.error("Error updating admin password:", error);
       throw new Error("Database update failed");
     }
-  }
+  },
+
+  /**
+   * Verifies an admin's security code.
+   * @param {string} idNumber - The ID number of the admin.
+   * @param {string} securityCode - The security code to verify.
+   * @returns {Promise<boolean>} True if the security code is valid, false otherwise.
+   */
+  verifySecurityCode: async function (idNumber, securityCode) {
+    try {
+      const admin = await Admin.findOne({ idNumber }, 'securityCode');
+      if (!admin) return false;
+
+      return await bcrypt.compare(securityCode, admin.securityCode);
+    } catch (error) {
+      console.error("Error verifying security code:", error);
+      throw new Error("Security code verification failed");
+    }
+  },
 };
 
 module.exports = AdminRepository;
