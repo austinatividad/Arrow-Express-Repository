@@ -1,10 +1,3 @@
-// import module from `../models/db.js`
-const db = require('../models/db.js');
-
-const User = require('../models/userdb.js');
-
-const Admin = require('../models/admindb.js');
-
 const UserRepository = require('../repositories/UserRepository.js');
 const AdminRepository = require('../repositories/AdminRepository.js');
 
