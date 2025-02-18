@@ -1,23 +1,60 @@
-
 const User = require('../models/userdb.js');
+const bcrypt = require('bcrypt');
 
 const UserRepository = {
 
   /**
    * Finds a user by their ID number.
    * @param {string} idNumber - The ID number of the user to find.
-   * @param {object} projection - The fields to project in the query.
    * @returns {Promise<object>} The user object if found, null otherwise.
    */
-  findById: async function (idNumber, projection = null) {
+  findById: async function (idNumber) {
     try {
-      return await User.findOne({ idNumber }, projection);
+      return await User.findOne(
+        { idNumber: idNumber },
+        'idNumber firstName lastName designation passengerType'
+      );
     } catch (error) {
       console.error("Error finding user by ID:", error);
       throw new Error("Database query failed");
     }
   },
 
+  /**
+   * Finds a user by their ID number, including their password.
+   * @param {string} idNumber - The ID number of the user to find.
+   * @returns {Promise<object>} The user object if found, null otherwise.
+   */
+  findByIdWithPassword: async function (idNumber) {
+    try {
+      return await User.findOne(
+        { idNumber: idNumber },
+        'idNumber password'
+      );
+    } catch (error) {
+      console.error("Error finding user by ID:", error);
+      throw new Error("Database query failed");
+    }
+  },
+
+  /**
+   * Verifies a user's password.
+   * @param {string} idNumber - The ID number of the user to verify.
+   * @param {string} password - The password to verify.
+   * @returns {Promise<object>} The user object if the password is valid, null otherwise.
+   */
+  verifyPassword: async function (idNumber, password) {
+    try {
+      const user = await this.findByIdWithPassword(idNumber);
+      if (!user) return null;
+
+      const isValid = await bcrypt.compare(password, user.password);
+      return isValid ? user : null;
+    } catch (error) {
+      console.error("Error verifying password:", error);
+      throw new Error("Password verification failed");
+    }
+  },
 
   /**
    * Finds a user by their email and security code.
@@ -27,7 +64,10 @@ const UserRepository = {
    */
   findByEmailAndSecurityCode: async function (email, securityCode) {
     try {
-      return await User.findOne({ email, securityCode });
+      return await User.findOne(
+        { email, securityCode },
+        'idNumber email securityCode'
+      );
     } catch (error) {
       console.error("Error finding user by email and security code:", error);
       throw new Error("Database query failed");
@@ -42,10 +82,13 @@ const UserRepository = {
    */
   updateUserPassword: async function (idNumber, password) {
     try {
-      return await User.updateOne({ idNumber }, { password });
+      return await User.updateOne(
+        { idNumber },
+        { password }
+      );
     } catch (error) {
       console.error("Error updating user password:", error);
-      throw new Error("Database query failed");
+      throw new Error("Database update failed");
     }
   },
 };
