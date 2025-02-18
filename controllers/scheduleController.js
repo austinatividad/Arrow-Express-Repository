@@ -1,38 +1,26 @@
-const Reservation = require('../models/reservationdb.js');
+const ReservationRepository = require('../repositories/ReservationRepository.js');
 
 const scheduleController = {
     getReservations: async (req, res) => {
-      try {
-        const { date, location, time } = req.params;
-        const { buttonClicked } = req.query;
-        if(buttonClicked=== 'entry') {
-
-            // TODO: Refactor to use a repository design pattern
-            const reservations = await Reservation.find({
-                date,
-                entryLoc: location,
-                entryTime: time,
-              });
-            return res.status(200).json(reservations);
-        }
-
-        else if (buttonClicked=== 'exit') {
-
+        try {
             const { date, location, time } = req.params;
-            // TODO: Refactor to use a repository design pattern
-            const reservations = await Reservation.find ({
-                date, 
-                exitLoc: location,
-                exitTime: time,
-            });
-            return res.status(200).json(reservations);
-        }
+            const { buttonClicked } = req.query;
 
-      } catch (err) {
-        console.error('Error retrieving reservations:', err);
-        return res.status(500).json({ error: 'Failed to retrieve reservations' });
-      }
-    },
+            let reservations;
+            if (buttonClicked === 'entry') {
+                reservations = await ReservationRepository.findEntryReservations(date, location, time);
+            } else if (buttonClicked === 'exit') {
+                reservations = await ReservationRepository.findExitReservations(date, location, time);
+            } else {
+                return res.status(400).json({ error: 'Invalid button type' });
+            }
+
+            return res.status(200).json(reservations);
+        } catch (error) {
+            console.error('Error retrieving reservations:', error);
+            return res.status(500).json({ error: 'Failed to retrieve reservations' });
+        }
+    }
 };
 
 module.exports = scheduleController;
